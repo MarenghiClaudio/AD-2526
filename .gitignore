@@ -1,5 +1,9 @@
 *.env
 
-//python
+// python
 __pycache__/
 *.pyc
+
+// text files
+*.txt
+*.log

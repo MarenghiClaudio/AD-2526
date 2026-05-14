@@ -6,14 +6,28 @@ Questo modulo estrae gli utenti unici e le relazioni di follow,
 poi li inserisce nel DB tramite COPY per massimizzare le prestazioni.
 """
 
+import csv
 import io
+import random
+from datetime import datetime, timedelta
+
 import psycopg2
 from faker import Faker
-from config import DB_CONFIG, DB_SCHEMA, TWITTER_DATA_PATH, RANDOM_SEED
+
+from config import (
+    DB_CONFIG,
+    DB_SCHEMA,
+    POST_WINDOW_DAYS,
+    RANDOM_SEED,
+    TWITTER_DATA_PATH,
+    USER_MEAN_EXTRA_DAYS,
+    USER_WINDOW_DAYS,
+)
 
 
 fake = Faker("it_IT")
 Faker.seed(RANDOM_SEED)
+_rng = random.Random(RANDOM_SEED)
 
 
 def _read_edges(path: str) -> list[tuple[int, int]]:
@@ -39,29 +53,45 @@ def _extract_users(edges: list[tuple[int, int]]) -> set[int]:
     return user_ids
 
 
-def _bulk_copy(cur, table: str, columns: list[str], rows: list[tuple]) -> None:
+def _bulk_copy(cur, table: str, columns: list[str], rows) -> None:
     """
-    Inserisce righe nel DB tramite COPY FROM (molto più veloce di INSERT).
-    Serializza le righe in un buffer CSV in memoria.
+    Inserimento bulk via COPY ... FROM STDIN WITH CSV.
+
+    Il formato CSV gestisce correttamente l'escape di virgolette, virgole,
+    newline e backslash nei contenuti, evitando di rompere il parsing.
     """
     buffer = io.StringIO()
-    for row in rows:
-        buffer.write("\t".join(str(v) for v in row) + "\n")
+    writer = csv.writer(buffer)
+    writer.writerows(rows)
     buffer.seek(0)
-    cur.copy_from(buffer, table, columns=columns)
+    cols = ", ".join(columns)
+    cur.copy_expert(f"COPY {table} ({cols}) FROM STDIN WITH (FORMAT csv)", buffer)
+
+
+def _user_created_at(now: datetime) -> str:
+    """
+    Distribuisce gli iscritti su una finestra storica con bias verso utenti
+    più recenti (esponenziale). L'età minima è POST_WINDOW_DAYS, così ogni
+    utente esiste prima di qualunque post sintetico — il vincolo logico
+    user.created_at <= post.created_at è sempre rispettato.
+    """
+    age_days = POST_WINDOW_DAYS + _rng.expovariate(1.0 / USER_MEAN_EXTRA_DAYS)
+    age_days = min(age_days, USER_WINDOW_DAYS)
+    return (now - timedelta(days=age_days)).isoformat()
 
 
 def load_users_and_follows():
     """
     Pipeline principale:
     1. Legge gli archi dal file
-    2. Inserisce gli utenti con username sintetico
+    2. Inserisce gli utenti con username sintetico e created_at distribuito
     3. Inserisce le relazioni di follow
     """
     edges = _read_edges(TWITTER_DATA_PATH)
     user_ids = _extract_users(edges)
 
     conn = psycopg2.connect(**DB_CONFIG)
+    now = datetime.now()
 
     with conn:
         with conn.cursor() as cur:
@@ -70,10 +100,10 @@ def load_users_and_follows():
             # --- Inserimento utenti ---
             print("[loader] Inserimento utenti...")
             user_rows = [
-                (uid, fake.user_name() + f"_{uid}")
+                (uid, f"{fake.user_name()}_{uid}", _user_created_at(now))
                 for uid in user_ids
             ]
-            _bulk_copy(cur, "users", ["user_id", "username"], user_rows)
+            _bulk_copy(cur, "users", ["user_id", "username", "created_at"], user_rows)
             print(f"[loader] {len(user_rows):,} utenti inseriti.")
 
             # --- Inserimento follow ---

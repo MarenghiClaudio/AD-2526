@@ -48,6 +48,18 @@ CREATE TABLE likes (
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     PRIMARY KEY (user_id, post_id)
 );
+
+-- Indici per i carichi tipici di un social network:
+--   * timeline per utente   → posts WHERE user_id=X ORDER BY created_at DESC
+--   * feed globale recente  → posts ORDER BY created_at DESC
+--   * follower di un utente → follows WHERE followed_id=X
+--     (l'inverso, "chi seguo", è già coperto dalla PK di follows)
+--   * like di un dato post  → likes WHERE post_id=X
+--     (l'inverso, "post a cui ho messo like", è coperto dalla PK di likes)
+CREATE INDEX idx_posts_user_created ON posts (user_id, created_at DESC);
+CREATE INDEX idx_posts_created      ON posts (created_at DESC);
+CREATE INDEX idx_follows_followed   ON follows (followed_id);
+CREATE INDEX idx_likes_post         ON likes (post_id);
 """
 
 

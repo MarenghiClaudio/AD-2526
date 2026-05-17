@@ -7,6 +7,8 @@ from ...core.request_state import start_timing
 from ...core.responses import ApiResponse, build_response
 from ...db import get_db
 from ..users import repository as users_repo
+from ..users.repository import invalidate_user_profile
+from ..feed.repository import invalidate_feed
 from . import repository
 from .schemas import FollowMutationResponse, FollowRequest
 
@@ -31,6 +33,10 @@ def add_follow(
     with rt.db.measure():
         _validate_actors(db, payload.follower_id, payload.followed_id)
         created = repository.add_follow(db, payload.follower_id, payload.followed_id)
+    if created:
+        invalidate_user_profile(payload.follower_id)
+        invalidate_user_profile(payload.followed_id)
+        invalidate_feed(payload.follower_id)
     return build_response(
         FollowMutationResponse(
             follower_id=payload.follower_id,
@@ -52,6 +58,10 @@ def remove_follow(
     rt = start_timing(request)
     with rt.db.measure():
         deleted = repository.remove_follow(db, payload.follower_id, payload.followed_id)
+    if deleted:
+        invalidate_user_profile(payload.follower_id)
+        invalidate_user_profile(payload.followed_id)
+        invalidate_feed(payload.follower_id)
     return build_response(
         FollowMutationResponse(
             follower_id=payload.follower_id,

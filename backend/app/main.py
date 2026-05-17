@@ -18,6 +18,7 @@ from .features.likes.routes import router as likes_router
 from .features.posts.routes import router as posts_router
 from .features.users.routes import router as users_router
 from .middleware.request_logger import close_sink, request_logging_middleware
+from .cache import close_redis, init_redis
 
 
 def _configure_logging() -> None:
@@ -33,10 +34,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Inizializzazione pool DB al boot, cleanup allo shutdown."""
     _configure_logging()
     init_pool()
+    init_redis()
     try:
         yield
     finally:
         close_pool()
+        close_redis()
         close_sink()
 
 

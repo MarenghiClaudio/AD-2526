@@ -24,10 +24,14 @@ di esecuzione di Postgres sia onesto (no Python-side ranking, no
 materializzazione preliminare in memoria del client).
 """
 
+import json
+
 from psycopg2.extensions import connection as Connection
 
 from .schemas import FeedItem, TimelineItem
 
+from app.cache import get_redis, is_cache_enabled
+from app.config import get_settings
 
 _TIMELINE_SQL = """
 WITH followed AS (
@@ -150,60 +154,69 @@ LIMIT %(limit)s
 """
 
 
-def fetch_timeline(
-    conn: Connection,
-    *,
-    viewer_id: int,
-    window_days: int,
-    limit: int,
-) -> list[TimelineItem]:
-    """Feed cronologico: solo i post degli utenti seguiti, ordine per data."""
+def fetch_timeline(conn, *, viewer_id, window_days, limit) -> list[TimelineItem]:
+    if is_cache_enabled():
+        cache_key = f"timeline:{viewer_id}:{window_days}:{limit}"
+        r = get_redis()
+        cached = r.get(cache_key)
+        if cached:
+            return [TimelineItem.model_validate(item) for item in json.loads(cached)]
+
     with conn.cursor() as cur:
-        cur.execute(
-            _TIMELINE_SQL,
-            {"viewer": viewer_id, "window_days": window_days, "limit": limit},
-        )
+        cur.execute(_TIMELINE_SQL, {"viewer": viewer_id, "window_days": window_days, "limit": limit})
         rows = cur.fetchall()
-    return [TimelineItem.model_validate(row) for row in rows]
+    items = [TimelineItem.model_validate(row) for row in rows]
+    if is_cache_enabled():
+        r.setex(cache_key, get_settings().redis_ttl_timeline, json.dumps([i.model_dump(mode="json") for i in items]))
+    return items
 
 
-def fetch_fyp(
-    conn: Connection,
-    *,
-    viewer_id: int,
-    window_days: int,
-    limit: int,
-    weights: dict[str, float],
-) -> list[FeedItem]:
-    """FYP con ranking, candidati = post di chi seguo."""
-    params = {
-        "viewer": viewer_id,
-        "window_days": window_days,
-        "limit": limit,
-        **weights,
-    }
+def fetch_fyp(conn, *, viewer_id, window_days, limit, weights) -> list[FeedItem]:
+    if is_cache_enabled():
+        cache_key = f"fyp:{viewer_id}:{window_days}:{limit}"
+        r = get_redis()
+        cached = r.get(cache_key)
+        if cached:
+            return [FeedItem.model_validate(item) for item in json.loads(cached)]
+
+    params = {"viewer": viewer_id, "window_days": window_days, "limit": limit, **weights}
     with conn.cursor() as cur:
         cur.execute(_FYP_SQL, params)
         rows = cur.fetchall()
-    return [FeedItem.model_validate(row) for row in rows]
+    items = [FeedItem.model_validate(row) for row in rows]
+    if is_cache_enabled():
+        r.setex(cache_key, get_settings().redis_ttl_fyp, json.dumps([i.model_dump(mode="json") for i in items]))
+    return items
 
 
-def fetch_fyp_with_fof(
-    conn: Connection,
-    *,
-    viewer_id: int,
-    window_days: int,
-    limit: int,
-    weights: dict[str, float],
-) -> list[FeedItem]:
-    """FYP esteso al 2° grado (FoF)."""
-    params = {
-        "viewer": viewer_id,
-        "window_days": window_days,
-        "limit": limit,
-        **weights,
-    }
+def invalidate_feed(viewer_id: int) -> None:
+    """Elimina tutte le chiavi di feed/timeline per viewer_id (timeline, fyp, fyp_fof)."""
+    if not is_cache_enabled():
+        return
+    r = get_redis()
+    for pattern in (
+        f"timeline:{viewer_id}:*",
+        f"fyp:{viewer_id}:*",
+        f"fyp_fof:{viewer_id}:*",
+    ):
+        keys = list(r.scan_iter(pattern))
+        if keys:
+            r.delete(*keys)
+
+
+def fetch_fyp_with_fof(conn, *, viewer_id, window_days, limit, weights) -> list[FeedItem]:
+    if is_cache_enabled():
+        cache_key = f"fyp_fof:{viewer_id}:{window_days}:{limit}"
+        r = get_redis()
+        cached = r.get(cache_key)
+        if cached:
+            return [FeedItem.model_validate(item) for item in json.loads(cached)]
+
+    params = {"viewer": viewer_id, "window_days": window_days, "limit": limit, **weights}
     with conn.cursor() as cur:
         cur.execute(_FYP_FOF_SQL, params)
         rows = cur.fetchall()
-    return [FeedItem.model_validate(row) for row in rows]
+    items = [FeedItem.model_validate(row) for row in rows]
+    if is_cache_enabled():
+        r.setex(cache_key, get_settings().redis_ttl_fyp, json.dumps([i.model_dump(mode="json") for i in items]))
+    return items

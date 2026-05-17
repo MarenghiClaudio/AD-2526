@@ -10,6 +10,7 @@ from ..users import repository as users_repo
 from . import repository
 from .schemas import LikeMutationResponse, LikeRequest
 
+
 router = APIRouter(prefix="/likes", tags=["likes"])
 
 
@@ -32,6 +33,7 @@ def add_like(
     with rt.db.measure():
         _validate_actors(db, payload.user_id, payload.post_id)
         created = repository.add_like(db, payload.user_id, payload.post_id)
+
     return build_response(
         LikeMutationResponse(
             user_id=payload.user_id,

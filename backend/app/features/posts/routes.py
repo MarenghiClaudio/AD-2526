@@ -7,6 +7,9 @@ from ...core.request_state import start_timing
 from ...core.responses import ApiResponse, build_response
 from ...db import get_db
 from ..users import repository as users_repo
+from ..users.repository import invalidate_user_profile
+from ..feed.repository import invalidate_feed
+from ..follows.repository import get_follower_ids
 from . import repository
 from .schemas import CreatePostRequest, CreatePostResponse, Post
 
@@ -44,4 +47,8 @@ def create_post(
         if not users_repo.user_exists(db, payload.user_id):
             raise HTTPException(status_code=404, detail=f"user {payload.user_id} not found")
         created = repository.create_post(db, payload.user_id, payload.content)
+        follower_ids = get_follower_ids(db, payload.user_id)
+    invalidate_user_profile(payload.user_id)
+    for fid in follower_ids:
+        invalidate_feed(fid)
     return build_response(created, rt)

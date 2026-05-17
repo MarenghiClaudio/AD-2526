@@ -5,3 +5,5 @@ pydantic>=2.6
 pydantic-settings>=2.2
 python-dotenv>=1.0
 locust>=2.20
+redis>=5.0
+hiredis>=2.3

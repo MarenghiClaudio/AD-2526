@@ -15,6 +15,13 @@ WHERE follower_id = %(fr)s AND followed_id = %(fd)s
 """
 
 
+def get_follower_ids(conn: Connection, user_id: int) -> list[int]:
+    """Ritorna gli user_id di tutti i follower di user_id."""
+    with conn.cursor() as cur:
+        cur.execute("SELECT follower_id FROM follows WHERE followed_id = %s", (user_id,))
+        return [row[0] for row in cur.fetchall()]
+
+
 def add_follow(conn: Connection, follower_id: int, followed_id: int) -> bool:
     with conn.cursor() as cur:
         cur.execute(_INSERT_FOLLOW_SQL, {"fr": follower_id, "fd": followed_id})

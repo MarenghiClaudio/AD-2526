@@ -47,6 +47,14 @@ class Settings(BaseSettings):
     # --- Logging ---
     request_log_path: str = "requests.log"
     log_level: str = "INFO"
+    
+    cache_enabled: bool = True
+    redis_host: str = "localhost"
+    redis_port: int = 6379
+    redis_db: int = 0
+    redis_ttl_timeline: int = 60
+    redis_ttl_fyp: int = 120
+    redis_ttl_user_profile: int = 300
 
     @property
     def fyp_recency_tau_seconds(self) -> float:

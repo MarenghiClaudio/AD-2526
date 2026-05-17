@@ -34,6 +34,7 @@ def _load_user_pool() -> list[int]:
     if USERS_CSV.exists():
         with USERS_CSV.open(newline="", encoding="utf-8") as f:
             reader = csv.reader(f)
+            next(reader, None)  # skip header
             users = [int(row[0]) for row in reader if row]
         if len(users) > USER_POOL_SIZE:
             random.shuffle(users)

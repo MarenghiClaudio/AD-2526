@@ -7,12 +7,15 @@ back dopo). Le funzioni accettano la connessione come parametro — niente
 side effect su stato globale.
 """
 import json
+import logging
 
 from psycopg2.extensions import connection as Connection
 
 from .schemas import UserProfile
 from app.cache import get_redis, is_cache_enabled
 from app.config import get_settings
+
+logger = logging.getLogger(__name__)
 
 
 _USER_PROFILE_SQL = """
@@ -39,12 +42,14 @@ WHERE u.user_id = %(uid)s
 
 def get_user_profile(conn: Connection, user_id: int) -> UserProfile | None:
     """Profilo utente con counter aggregati. None se l'utente non esiste."""
+    cache_key = f"user:{user_id}:profile"
     if is_cache_enabled():
-        cache_key = f"user:{user_id}:profile"
-        r = get_redis()
-        cached = r.get(cache_key)
-        if cached:
-            return UserProfile.model_validate(json.loads(cached))
+        try:
+            cached = get_redis().get(cache_key)
+            if cached:
+                return UserProfile.model_validate(json.loads(cached))
+        except Exception:
+            logger.warning("Cache read failed for %s, falling back to DB", cache_key)
 
     with conn.cursor() as cur:
         cur.execute(_USER_PROFILE_SQL, {"uid": user_id})
@@ -54,7 +59,10 @@ def get_user_profile(conn: Connection, user_id: int) -> UserProfile | None:
 
     profile = UserProfile.model_validate(row)
     if is_cache_enabled():
-        r.setex(cache_key, get_settings().redis_ttl_user_profile, profile.model_dump_json())
+        try:
+            get_redis().setex(cache_key, get_settings().redis_ttl_user_profile, profile.model_dump_json())
+        except Exception:
+            logger.warning("Cache write failed for %s", cache_key)
     return profile
 
 
@@ -67,4 +75,7 @@ def user_exists(conn: Connection, user_id: int) -> bool:
 def invalidate_user_profile(user_id: int) -> None:
     """Chiamare dopo ogni write che altera i contatori (like, follow, post)."""
     if is_cache_enabled():
-        get_redis().delete(f"user:{user_id}:profile")
+        try:
+            get_redis().delete(f"user:{user_id}:profile")
+        except Exception:
+            logger.warning("Cache invalidation failed for user:%s:profile", user_id)

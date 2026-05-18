@@ -30,8 +30,12 @@ from psycopg2.extensions import connection as Connection
 
 from .schemas import FeedItem, TimelineItem
 
+import logging
+
 from app.cache import get_redis, is_cache_enabled
 from app.config import get_settings
+
+logger = logging.getLogger(__name__)
 
 _TIMELINE_SQL = """
 WITH followed AS (
@@ -155,29 +159,36 @@ LIMIT %(limit)s
 
 
 def fetch_timeline(conn, *, viewer_id, window_days, limit) -> list[TimelineItem]:
+    cache_key = f"timeline:{viewer_id}:{window_days}:{limit}"
     if is_cache_enabled():
-        cache_key = f"timeline:{viewer_id}:{window_days}:{limit}"
-        r = get_redis()
-        cached = r.get(cache_key)
-        if cached:
-            return [TimelineItem.model_validate(item) for item in json.loads(cached)]
+        try:
+            cached = get_redis().get(cache_key)
+            if cached:
+                return [TimelineItem.model_validate(item) for item in json.loads(cached)]
+        except Exception:
+            logger.warning("Cache read failed for %s, falling back to DB", cache_key)
 
     with conn.cursor() as cur:
         cur.execute(_TIMELINE_SQL, {"viewer": viewer_id, "window_days": window_days, "limit": limit})
         rows = cur.fetchall()
     items = [TimelineItem.model_validate(row) for row in rows]
     if is_cache_enabled():
-        r.setex(cache_key, get_settings().redis_ttl_timeline, json.dumps([i.model_dump(mode="json") for i in items]))
+        try:
+            get_redis().setex(cache_key, get_settings().redis_ttl_timeline, json.dumps([i.model_dump(mode="json") for i in items]))
+        except Exception:
+            logger.warning("Cache write failed for %s", cache_key)
     return items
 
 
 def fetch_fyp(conn, *, viewer_id, window_days, limit, weights) -> list[FeedItem]:
+    cache_key = f"fyp:{viewer_id}:{window_days}:{limit}"
     if is_cache_enabled():
-        cache_key = f"fyp:{viewer_id}:{window_days}:{limit}"
-        r = get_redis()
-        cached = r.get(cache_key)
-        if cached:
-            return [FeedItem.model_validate(item) for item in json.loads(cached)]
+        try:
+            cached = get_redis().get(cache_key)
+            if cached:
+                return [FeedItem.model_validate(item) for item in json.loads(cached)]
+        except Exception:
+            logger.warning("Cache read failed for %s, falling back to DB", cache_key)
 
     params = {"viewer": viewer_id, "window_days": window_days, "limit": limit, **weights}
     with conn.cursor() as cur:
@@ -185,7 +196,10 @@ def fetch_fyp(conn, *, viewer_id, window_days, limit, weights) -> list[FeedItem]
         rows = cur.fetchall()
     items = [FeedItem.model_validate(row) for row in rows]
     if is_cache_enabled():
-        r.setex(cache_key, get_settings().redis_ttl_fyp, json.dumps([i.model_dump(mode="json") for i in items]))
+        try:
+            get_redis().setex(cache_key, get_settings().redis_ttl_fyp, json.dumps([i.model_dump(mode="json") for i in items]))
+        except Exception:
+            logger.warning("Cache write failed for %s", cache_key)
     return items
 
 
@@ -193,24 +207,29 @@ def invalidate_feed(viewer_id: int) -> None:
     """Elimina tutte le chiavi di feed/timeline per viewer_id (timeline, fyp, fyp_fof)."""
     if not is_cache_enabled():
         return
-    r = get_redis()
-    for pattern in (
-        f"timeline:{viewer_id}:*",
-        f"fyp:{viewer_id}:*",
-        f"fyp_fof:{viewer_id}:*",
-    ):
-        keys = list(r.scan_iter(pattern))
-        if keys:
-            r.delete(*keys)
+    try:
+        r = get_redis()
+        for pattern in (
+            f"timeline:{viewer_id}:*",
+            f"fyp:{viewer_id}:*",
+            f"fyp_fof:{viewer_id}:*",
+        ):
+            keys = list(r.scan_iter(pattern))
+            if keys:
+                r.delete(*keys)
+    except Exception:
+        logger.warning("Cache invalidation failed for feed viewer:%s", viewer_id)
 
 
 def fetch_fyp_with_fof(conn, *, viewer_id, window_days, limit, weights) -> list[FeedItem]:
+    cache_key = f"fyp_fof:{viewer_id}:{window_days}:{limit}"
     if is_cache_enabled():
-        cache_key = f"fyp_fof:{viewer_id}:{window_days}:{limit}"
-        r = get_redis()
-        cached = r.get(cache_key)
-        if cached:
-            return [FeedItem.model_validate(item) for item in json.loads(cached)]
+        try:
+            cached = get_redis().get(cache_key)
+            if cached:
+                return [FeedItem.model_validate(item) for item in json.loads(cached)]
+        except Exception:
+            logger.warning("Cache read failed for %s, falling back to DB", cache_key)
 
     params = {"viewer": viewer_id, "window_days": window_days, "limit": limit, **weights}
     with conn.cursor() as cur:
@@ -218,5 +237,8 @@ def fetch_fyp_with_fof(conn, *, viewer_id, window_days, limit, weights) -> list[
         rows = cur.fetchall()
     items = [FeedItem.model_validate(row) for row in rows]
     if is_cache_enabled():
-        r.setex(cache_key, get_settings().redis_ttl_fyp, json.dumps([i.model_dump(mode="json") for i in items]))
+        try:
+            get_redis().setex(cache_key, get_settings().redis_ttl_fyp, json.dumps([i.model_dump(mode="json") for i in items]))
+        except Exception:
+            logger.warning("Cache write failed for %s", cache_key)
     return items

@@ -61,7 +61,7 @@ def _zipf_pick(pool: list[int], rng: random.Random) -> int:
 class BrowsingUser(HttpUser):
     """Utente tipico: legge feed e timeline, occasionalmente mette like."""
 
-    wait_time = between(0.5, 2.0)
+    wait_time = between(0.1, 0.3)
 
     def on_start(self) -> None:
         self.rng = random.Random()

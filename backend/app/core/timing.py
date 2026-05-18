@@ -43,10 +43,22 @@ class Timer:
 
 @dataclass
 class RequestTiming:
-    """Container delle misure di una singola request."""
+    """
+    Container delle misure di una singola request.
+
+    `cache_hit` ha tre stati:
+      * None  → la cache non è stata interrogata (es. endpoint di sola scrittura)
+      * True  → la prima lookup ha trovato il dato (response servita da cache)
+      * False → la prima lookup ha fallito (response servita da DB)
+
+    Lo gestisce `CacheService._record_hit`: solo la PRIMA get sovrascrive None.
+    Letture successive (es. get_post dentro fetch_feed) non lo cambiano.
+    """
 
     t0: float = field(default_factory=time.perf_counter)
     db: Timer = field(default_factory=Timer)
+    cache: Timer = field(default_factory=Timer)
+    cache_hit: bool | None = None
 
     @property
     def total_ms(self) -> float:

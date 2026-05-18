@@ -1,14 +1,22 @@
 """
 Repository per la feature users.
 
-Tutta la logica di accesso al DB sta qui. In Fase 2 questo modulo diventa
-il punto naturale dove inserire la cache (lookup Redis prima del PG, write
-back dopo). Le funzioni accettano la connessione come parametro — niente
-side effect su stato globale.
+Strategia Fase 2 — cache-aside su `user:{id}`:
+  READ : check cache → HIT? return. MISS → query PG → set cache (TTL) → return.
+  WRITE: la mutazione di un counter (post/follower/following) viene gestita
+         dai repository delle feature corrispondenti, che chiamano
+         `invalidate(cache, user_id)` qui sotto.
+
+Le funzioni ricevono `db_timer: Timer` esplicito così che il `db_ms`
+riportato in `Timing` includa **solo** le chiamate psycopg2 (escludendo
+i round-trip a Redis, che sono misurati separatamente in `cache_ms`).
 """
 
 from psycopg2.extensions import connection as Connection
 
+from ...cache import CacheService, Keys
+from ...config import get_settings
+from ...core.timing import Timer
 from .schemas import UserProfile
 
 
@@ -34,18 +42,43 @@ WHERE u.user_id = %(uid)s
 """
 
 
-def get_user_profile(conn: Connection, user_id: int) -> UserProfile | None:
-    """Profilo utente con counter aggregati. None se l'utente non esiste."""
-    with conn.cursor() as cur:
-        cur.execute(_USER_PROFILE_SQL, {"uid": user_id})
-        row = cur.fetchone()
+def get_user_profile(
+    conn: Connection,
+    user_id: int,
+    cache: CacheService,
+    db_timer: Timer,
+) -> UserProfile | None:
+    """Profilo utente con counter aggregati (cache-aside)."""
+    key = Keys.user(user_id)
+    cached = cache.get_model(key, UserProfile)
+    if cached is not None:
+        return cached
+
+    with db_timer.measure():
+        with conn.cursor() as cur:
+            cur.execute(_USER_PROFILE_SQL, {"uid": user_id})
+            row = cur.fetchone()
     if row is None:
         return None
-    return UserProfile.model_validate(row)
+    profile = UserProfile.model_validate(row)
+    cache.set_model(key, profile, ttl=get_settings().cache_ttl_user)
+    return profile
 
 
-def user_exists(conn: Connection, user_id: int) -> bool:
-    """Check rapido di esistenza utente (per validazione su POST)."""
-    with conn.cursor() as cur:
-        cur.execute("SELECT 1 FROM users WHERE user_id = %s", (user_id,))
-        return cur.fetchone() is not None
+def user_exists(conn: Connection, user_id: int, db_timer: Timer) -> bool:
+    """
+    Check rapido di esistenza utente (per validazione su POST).
+    Non passa per la cache: la chiamata è cheap (PK lookup) e si vuole
+    sempre vedere lo stato corrente del DB sui guard di scrittura.
+    """
+    with db_timer.measure():
+        with conn.cursor() as cur:
+            cur.execute("SELECT 1 FROM users WHERE user_id = %s", (user_id,))
+            return cur.fetchone() is not None
+
+
+def invalidate(cache: CacheService, *user_ids: int) -> None:
+    """Cancella le chiavi `user:{id}` (chiamato dai repository di altre feature)."""
+    if not user_ids:
+        return
+    cache.delete(*(Keys.user(uid) for uid in user_ids))

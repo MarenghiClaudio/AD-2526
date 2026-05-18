@@ -77,6 +77,8 @@ async def request_logging_middleware(
         total_ms = round((time.perf_counter() - start) * 1000.0, 3)
         rt: RequestTiming | None = getattr(request.state, "timing", None)
         db_ms = rt.db.elapsed_ms if rt is not None else 0.0
+        cache_ms = rt.cache.elapsed_ms if rt is not None else 0.0
+        cache_hit = rt.cache_hit if rt is not None else None
 
         entry: dict[str, object] = {
             "ts": time.time(),
@@ -85,6 +87,8 @@ async def request_logging_middleware(
             "status": status_code,
             "total_ms": total_ms,
             "db_ms": db_ms,
+            "cache_ms": cache_ms,
+            "cache_hit": cache_hit,
         }
         # Path params utili per analizzare hot users in Fase 2
         if request.path_params:

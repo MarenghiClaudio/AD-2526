@@ -40,6 +40,24 @@ class Settings(BaseSettings):
     fyp_default_limit: int = 50
     fyp_max_limit: int = 200
 
+    # --- Redis (Fase 2: caching layer) ---
+    redis_host: str = "localhost"
+    redis_port: int = 6379
+    redis_db: int = 0
+    redis_password: str = ""
+    redis_pool_max_conn: int = 50
+
+    # Master switch: se False, le repository bypassano la cache e vanno a PG.
+    # Permette di rieseguire la baseline Fase 1 senza rimuovere il codice cache.
+    cache_enabled: bool = True
+
+    # TTL per tipo di chiave (secondi)
+    cache_ttl_user: int = 300
+    cache_ttl_post: int = 300
+    cache_ttl_timeline: int = 60
+    cache_ttl_feed: int = 60
+    cache_ttl_feed_fof: int = 60
+
     # --- HTTP server ---
     app_host: str = "0.0.0.0"
     app_port: int = 8000

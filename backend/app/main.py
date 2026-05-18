@@ -10,6 +10,7 @@ from typing import AsyncIterator
 
 from fastapi import FastAPI
 
+from . import cache as cache_module
 from .config import get_settings
 from .db import close_pool, init_pool
 from .features.feed.routes import router as feed_router
@@ -30,12 +31,14 @@ def _configure_logging() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    """Inizializzazione pool DB al boot, cleanup allo shutdown."""
+    """Inizializzazione dei pool al boot, cleanup allo shutdown."""
     _configure_logging()
     init_pool()
+    cache_module.init_pool()
     try:
         yield
     finally:
+        cache_module.close_pool()
         close_pool()
         close_sink()
 

@@ -11,9 +11,11 @@ i benchmark direttamente confrontabili (stessa risorsa, stesso parsing
 lato Locust, differenza nei soli numeri).
 """
 
+import redis
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from psycopg2.extensions import connection as Connection
 
+from ...cache import CacheService, get_cache_client
 from ...config import Settings, get_settings
 from ...core.request_state import start_timing
 from ...core.responses import ApiResponse, build_response
@@ -43,30 +45,29 @@ def _resolve_limit(requested: int | None, settings: Settings) -> int:
     return max(1, min(requested, settings.fyp_max_limit))
 
 
-def _ensure_user(db: Connection, user_id: int) -> None:
-    if not users_repo.user_exists(db, user_id):
-        raise HTTPException(status_code=404, detail=f"user {user_id} not found")
-
-
 @router.get("/timeline/{user_id}", response_model=ApiResponse[TimelineResponse])
 def get_timeline(
     user_id: int,
     request: Request,
     db: Connection = Depends(get_db),
+    redis_client: redis.Redis = Depends(get_cache_client),
     settings: Settings = Depends(get_settings),
     limit: int | None = Query(default=None, ge=1),
 ) -> ApiResponse[TimelineResponse]:
     """Feed cronologico semplice: i post di chi segui, ordine per data."""
     rt = start_timing(request)
+    cache = CacheService(redis_client, rt, enabled=settings.cache_enabled)
     effective_limit = _resolve_limit(limit, settings)
-    with rt.db.measure():
-        _ensure_user(db, user_id)
-        items = repository.fetch_timeline(
-            db,
-            viewer_id=user_id,
-            window_days=settings.fyp_recency_window_days,
-            limit=effective_limit,
-        )
+    if not users_repo.user_exists(db, user_id, rt.db):
+        raise HTTPException(status_code=404, detail=f"user {user_id} not found")
+    items = repository.fetch_timeline(
+        db,
+        viewer_id=user_id,
+        window_days=settings.fyp_recency_window_days,
+        limit=effective_limit,
+        cache=cache,
+        db_timer=rt.db,
+    )
     return build_response(TimelineResponse(viewer_id=user_id, items=items), rt)
 
 
@@ -75,6 +76,7 @@ def get_feed(
     user_id: int,
     request: Request,
     db: Connection = Depends(get_db),
+    redis_client: redis.Redis = Depends(get_cache_client),
     settings: Settings = Depends(get_settings),
     limit: int | None = Query(default=None, ge=1),
     with_fof: bool = Query(default=False, description="Include follower-of-follower (2nd hop)"),
@@ -84,18 +86,21 @@ def get_feed(
     i post degli utenti seguiti dai miei follow (affinity ridotta).
     """
     rt = start_timing(request)
+    cache = CacheService(redis_client, rt, enabled=settings.cache_enabled)
     effective_limit = _resolve_limit(limit, settings)
     weights = _ranking_weights(settings)
-    with rt.db.measure():
-        _ensure_user(db, user_id)
-        fetch = repository.fetch_fyp_with_fof if with_fof else repository.fetch_fyp
-        items = fetch(
-            db,
-            viewer_id=user_id,
-            window_days=settings.fyp_recency_window_days,
-            limit=effective_limit,
-            weights=weights,
-        )
+    if not users_repo.user_exists(db, user_id, rt.db):
+        raise HTTPException(status_code=404, detail=f"user {user_id} not found")
+    fetch = repository.fetch_fyp_with_fof if with_fof else repository.fetch_fyp
+    items = fetch(
+        db,
+        viewer_id=user_id,
+        window_days=settings.fyp_recency_window_days,
+        limit=effective_limit,
+        weights=weights,
+        cache=cache,
+        db_timer=rt.db,
+    )
     return build_response(
         FeedResponse(viewer_id=user_id, with_fof=with_fof, items=items),
         rt,

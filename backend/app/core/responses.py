@@ -18,9 +18,8 @@ T = TypeVar("T")
 class Timing(BaseModel):
     total_ms: float
     db_ms: float = 0.0
-    # In Fase 2 si aggiungeranno qui:
-    #   cache_hit: bool | None = None
-    #   cache_ms: float = 0.0
+    cache_ms: float = 0.0
+    cache_hit: Optional[bool] = None
 
 
 class ApiResponse(BaseModel, Generic[T]):
@@ -30,19 +29,20 @@ class ApiResponse(BaseModel, Generic[T]):
     timing: Optional[Timing] = None
 
 
+def _timing(rt: RequestTiming) -> Timing:
+    return Timing(
+        total_ms=rt.total_ms,
+        db_ms=rt.db.elapsed_ms,
+        cache_ms=rt.cache.elapsed_ms,
+        cache_hit=rt.cache_hit,
+    )
+
+
 def build_response(data: Any, rt: RequestTiming) -> ApiResponse:
     """Costruisce una risposta di successo includendo le metriche di tempo."""
-    return ApiResponse(
-        success=True,
-        data=data,
-        timing=Timing(total_ms=rt.total_ms, db_ms=rt.db.elapsed_ms),
-    )
+    return ApiResponse(success=True, data=data, timing=_timing(rt))
 
 
 def build_error(error: str, rt: RequestTiming) -> ApiResponse:
     """Costruisce una risposta di errore con timing (utile per benchmark)."""
-    return ApiResponse(
-        success=False,
-        error=error,
-        timing=Timing(total_ms=rt.total_ms, db_ms=rt.db.elapsed_ms),
-    )
+    return ApiResponse(success=False, error=error, timing=_timing(rt))

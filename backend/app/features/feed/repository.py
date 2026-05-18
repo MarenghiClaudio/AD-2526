@@ -26,6 +26,9 @@ materializzazione preliminare in memoria del client).
 
 from psycopg2.extensions import connection as Connection
 
+from ...cache import CacheService, Keys
+from ...config import get_settings
+from ...core.timing import Timer
 from .schemas import FeedItem, TimelineItem
 
 
@@ -156,15 +159,25 @@ def fetch_timeline(
     viewer_id: int,
     window_days: int,
     limit: int,
+    cache: CacheService,
+    db_timer: Timer,
 ) -> list[TimelineItem]:
-    """Feed cronologico: solo i post degli utenti seguiti, ordine per data."""
-    with conn.cursor() as cur:
-        cur.execute(
-            _TIMELINE_SQL,
-            {"viewer": viewer_id, "window_days": window_days, "limit": limit},
-        )
-        rows = cur.fetchall()
-    return [TimelineItem.model_validate(row) for row in rows]
+    """Feed cronologico (cache-aside): solo i post degli utenti seguiti."""
+    key = Keys.timeline(viewer_id, limit)
+    cached = cache.get_model_list(key, TimelineItem)
+    if cached is not None:
+        return cached
+
+    with db_timer.measure():
+        with conn.cursor() as cur:
+            cur.execute(
+                _TIMELINE_SQL,
+                {"viewer": viewer_id, "window_days": window_days, "limit": limit},
+            )
+            rows = cur.fetchall()
+    items = [TimelineItem.model_validate(row) for row in rows]
+    cache.set_model_list(key, items, ttl=get_settings().cache_ttl_timeline)
+    return items
 
 
 def fetch_fyp(
@@ -174,18 +187,28 @@ def fetch_fyp(
     window_days: int,
     limit: int,
     weights: dict[str, float],
+    cache: CacheService,
+    db_timer: Timer,
 ) -> list[FeedItem]:
-    """FYP con ranking, candidati = post di chi seguo."""
+    """FYP a 1° grado (cache-aside)."""
+    key = Keys.fyp(viewer_id, limit)
+    cached = cache.get_model_list(key, FeedItem)
+    if cached is not None:
+        return cached
+
     params = {
         "viewer": viewer_id,
         "window_days": window_days,
         "limit": limit,
         **weights,
     }
-    with conn.cursor() as cur:
-        cur.execute(_FYP_SQL, params)
-        rows = cur.fetchall()
-    return [FeedItem.model_validate(row) for row in rows]
+    with db_timer.measure():
+        with conn.cursor() as cur:
+            cur.execute(_FYP_SQL, params)
+            rows = cur.fetchall()
+    items = [FeedItem.model_validate(row) for row in rows]
+    cache.set_model_list(key, items, ttl=get_settings().cache_ttl_feed)
+    return items
 
 
 def fetch_fyp_with_fof(
@@ -195,15 +218,25 @@ def fetch_fyp_with_fof(
     window_days: int,
     limit: int,
     weights: dict[str, float],
+    cache: CacheService,
+    db_timer: Timer,
 ) -> list[FeedItem]:
-    """FYP esteso al 2° grado (FoF)."""
+    """FYP esteso al 2° grado (cache-aside)."""
+    key = Keys.fyp_fof(viewer_id, limit)
+    cached = cache.get_model_list(key, FeedItem)
+    if cached is not None:
+        return cached
+
     params = {
         "viewer": viewer_id,
         "window_days": window_days,
         "limit": limit,
         **weights,
     }
-    with conn.cursor() as cur:
-        cur.execute(_FYP_FOF_SQL, params)
-        rows = cur.fetchall()
-    return [FeedItem.model_validate(row) for row in rows]
+    with db_timer.measure():
+        with conn.cursor() as cur:
+            cur.execute(_FYP_FOF_SQL, params)
+            rows = cur.fetchall()
+    items = [FeedItem.model_validate(row) for row in rows]
+    cache.set_model_list(key, items, ttl=get_settings().cache_ttl_feed_fof)
+    return items

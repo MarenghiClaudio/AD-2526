@@ -47,11 +47,15 @@ class Settings(BaseSettings):
     redis_password: str = ""
     redis_pool_max_conn: int = 50
 
-    # Master switch: se False, le repository bypassano la cache e vanno a PG.
-    # Permette di rieseguire la baseline Fase 1 senza rimuovere il codice cache.
-    cache_enabled: bool = True
+    # Strategia di caching attiva. Deve combaciare con una chiave di
+    # `app/strategies/__init__.py::STRATEGIES`. Valori built-in:
+    #   - "no_cache"     → baseline Fase 1, bypassa Redis
+    #   - "cache_aside"  → lazy loading + TTL (default)
+    # I compagni aggiungeranno qui le loro strategy.
+    cache_strategy: str = "cache_aside"
 
-    # TTL per tipo di chiave (secondi)
+    # TTL per tipo di chiave (secondi). Usato dalle strategy che si basano
+    # su TTL (cache_aside, write_through, ecc.).
     cache_ttl_user: int = 300
     cache_ttl_post: int = 300
     cache_ttl_timeline: int = 60

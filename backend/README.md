@@ -1,27 +1,34 @@
 # Backend — Social Network API
 
-Backend FastAPI per i benchmark di caching del progetto AD-2526.
-
-In **Fase 1** tutte le query vanno direttamente a PostgreSQL; serve a
-fissare la baseline di performance prima di introdurre Redis in Fase 2.
+Backend FastAPI con caching layer plug-in. La strategia attiva si seleziona
+via `.env` (`CACHE_STRATEGY`) senza modificare le route.
 
 ## Architettura
 
 ```
 backend/
-├── .env                       # configurazione runtime (DB, pesi FYP, log)
+├── .env                       # configurazione runtime (DB, Redis, FYP, strategy attiva)
+├── Dockerfile                 # immagine del backend
 ├── requirements.txt
 ├── locustfile.py              # load generator (read 95% / write 5%, Zipf)
 └── app/
     ├── main.py                # bootstrap FastAPI + lifespan + router wiring
     ├── config.py              # Settings via pydantic-settings
-    ├── db.py                  # ThreadedConnectionPool + Depends(get_db)
+    ├── db.py                  # ThreadedConnectionPool psycopg2 + Depends(get_db)
+    ├── cache.py               # ConnectionPool Redis + CacheService + Keys
     ├── core/
     │   ├── timing.py          # Timer + RequestTiming
     │   ├── request_state.py   # aggancia il timer a request.state
     │   └── responses.py       # ApiResponse[T] + Timing + build_response
     ├── middleware/
-    │   └── request_logger.py  # log strutturato per-request (JSONL)
+    │   └── request_logger.py  # log strutturato per-request (JSONL, hit incluso)
+    ├── strategies/            # ★ caching strategy plug-in
+    │   ├── base.py            # contratto CacheStrategy + StrategyContext
+    │   ├── cache_aside.py     # lazy loading + TTL (default)
+    │   ├── no_cache.py        # bypass (= baseline Fase 1)
+    │   ├── deps.py            # Depends FastAPI per strategy + context
+    │   ├── __init__.py        # registry STRATEGIES
+    │   └── README.md          # come aggiungere una nuova strategy
     └── features/
         ├── users/             # GET  /users/{user_id}
         ├── posts/             # GET  /posts/{post_id}, POST /posts
@@ -30,10 +37,24 @@ backend/
         └── feed/              # GET  /timeline/{id}, GET /feed/{id}[?with_fof]
 ```
 
-Per ogni feature: `routes.py` (endpoint HTTP) + `repository.py` (accesso
-DB) + `schemas.py` (modelli Pydantic). Il pattern Repository concentra in
-un solo punto le query SQL e diventa il naturale punto di inserimento del
-caching layer in Fase 2.
+Per ogni feature: `routes.py` (endpoint HTTP) + `repository.py` (SQL puro,
+data access) + `schemas.py` (modelli Pydantic). Le route delegano la
+logica di lettura/invalidazione a una `CacheStrategy` (vedi
+[`app/strategies/README.md`](app/strategies/README.md)).
+
+## Strategie di caching
+
+| Nome | Comportamento | Quando usarla |
+|---|---|---|
+| `no_cache` | bypassa Redis, tutte le letture a PG | baseline Fase 1, controllo A/B |
+| `cache_aside` | lazy loading + TTL, invalidazione event-based | default Fase 2 |
+
+Per aggiungere una nuova strategy vedi
+[`app/strategies/README.md`](app/strategies/README.md). Workflow tipico:
+
+1. Crea `app/strategies/<nome>.py` con una classe che eredita da `CacheStrategy`
+2. Registrala in `app/strategies/__init__.py` (dict `STRATEGIES`)
+3. Cambia `CACHE_STRATEGY=<nome>` in `.env`, riavvia uvicorn
 
 ## Setup
 

@@ -1,0 +1,119 @@
+## AD-2526 — stack completo per benchmark del caching.
+##
+## Servizi:
+##   postgres     → DBMS relazionale (source of truth)
+##   redis        → caching layer (single-node, Fase 2)
+##   backend      → API FastAPI (legge la strategia da CACHE_STRATEGY)
+##   data_loader  → container one-shot: crea schema + carica dataset + genera
+##                  post/like sintetici. Si attiva via --profile setup.
+##
+## Comandi tipici:
+##   # Avvia tutto lo stack (postgres + redis + backend)
+##   docker compose up -d
+##
+##   # Setup iniziale (one-shot, popola il DB partendo da twitter_combined.txt)
+##   docker compose --profile setup run --rm data_loader
+##
+##   # Cambia strategia: edita .env (CACHE_STRATEGY=...) e riavvia il backend
+##   docker compose restart backend
+##
+##   # Shutdown completo (mantiene i volumi)
+##   docker compose down
+##
+##   # Reset totale (CANCELLA i dati di postgres e redis)
+##   docker compose down -v
+
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: ad2526-postgres
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB:-ad}
+      POSTGRES_USER:     ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      # Bootstrap script: crea lo schema "ad" la prima volta che il volume è vuoto
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+    # max_connections=200 e shared_buffers conservativi per benchmark realistici
+    command: >
+      postgres
+        -c max_connections=200
+        -c shared_buffers=256MB
+        -c work_mem=16MB
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-ad}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    container_name: ad2526-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    # Persistenza minima (snapshot ogni 60s se ≥1 chiave). Per i benchmark
+    # va bene; in produzione si tunerebbe diversamente.
+    command: ["redis-server", "--save", "60", "1", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ad2526-backend
+    env_file:
+      - ./backend/.env
+    # Override degli host: dentro la rete Docker non è "localhost"
+    environment:
+      DB_HOST:    postgres
+      REDIS_HOST: redis
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    # Su Linux/WSL2 il container ha tipicamente accesso a tutti i core del
+    # sistema. Passiamo --workers 8 come default (allineato al tuning di
+    # Fase 2 su Ryzen 9 6900HX, 8 core fisici).
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "8"]
+
+  # One-shot container per popolare il DB. Si attiva esplicitamente:
+  #   docker compose --profile setup run --rm data_loader
+  data_loader:
+    build:
+      context: ./social_network
+      dockerfile: Dockerfile
+    container_name: ad2526-loader
+    profiles: [setup]
+    environment:
+      DB_HOST:          postgres
+      DB_PORT:          "5432"
+      DB_NAME:          ${POSTGRES_DB:-ad}
+      DB_USER:          ${POSTGRES_USER:-postgres}
+      DB_PASSWORD:      ${POSTGRES_PASSWORD:-admin}
+      DB_SCHEMA:        ad
+      TWITTER_DATA_PATH: /data/twitter_combined.txt
+      RANDOM_SEED:      "42"
+    volumes:
+      # Monta la cartella locale ./datasets dentro /data del container.
+      # Mettici dentro `twitter_combined.txt` prima di lanciare il loader.
+      - ./datasets:/data:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pg_data:
+  redis_data:

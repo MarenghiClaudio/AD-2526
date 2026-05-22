@@ -21,3 +21,7 @@ backend/locust_report*
 *_failures.csv
 *_exceptions.csv
 *_stats_history.csv
+
+# Datasets (file di input pesanti, scaricati a parte)
+datasets/*
+!datasets/README.md

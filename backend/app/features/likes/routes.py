@@ -1,15 +1,10 @@
 """Endpoint HTTP per la feature likes."""
 
-import redis
 from fastapi import APIRouter, Depends, HTTPException, Request
-from psycopg2.extensions import connection as Connection
 
-from ...cache import CacheService, get_cache_client
-from ...config import Settings, get_settings
-from ...core.request_state import start_timing
 from ...core.responses import ApiResponse, build_response
-from ...core.timing import Timer
-from ...db import get_db
+from ...strategies.base import CacheStrategy, StrategyContext
+from ...strategies.deps import get_active_strategy, get_request_context
 from ..users import repository as users_repo
 from . import repository
 from .schemas import LikeMutationResponse, LikeRequest
@@ -17,13 +12,10 @@ from .schemas import LikeMutationResponse, LikeRequest
 router = APIRouter(prefix="/likes", tags=["likes"])
 
 
-def _validate_actors(
-    db: Connection, user_id: int, post_id: int, db_timer: Timer
-) -> None:
-    """Verifica esistenza di utente e post prima di mutare."""
-    if not users_repo.user_exists(db, user_id, db_timer):
+def _validate_actors(ctx: StrategyContext, user_id: int, post_id: int) -> None:
+    if not users_repo.user_exists(ctx.conn, user_id, ctx.db_timer):
         raise HTTPException(status_code=404, detail=f"user {user_id} not found")
-    if not repository.post_exists(db, post_id, db_timer):
+    if not repository.post_exists(ctx.conn, post_id, ctx.db_timer):
         raise HTTPException(status_code=404, detail=f"post {post_id} not found")
 
 
@@ -31,15 +23,16 @@ def _validate_actors(
 def add_like(
     payload: LikeRequest,
     request: Request,
-    db: Connection = Depends(get_db),
-    redis_client: redis.Redis = Depends(get_cache_client),
-    settings: Settings = Depends(get_settings),
+    strategy: CacheStrategy = Depends(get_active_strategy),
+    ctx: StrategyContext = Depends(get_request_context),
 ) -> ApiResponse[LikeMutationResponse]:
     """Aggiunge un like (idempotente)."""
-    rt = start_timing(request)
-    cache = CacheService(redis_client, rt, enabled=settings.cache_enabled)
-    _validate_actors(db, payload.user_id, payload.post_id, rt.db)
-    created = repository.add_like(db, payload.user_id, payload.post_id, cache, rt.db)
+    _validate_actors(ctx, payload.user_id, payload.post_id)
+    created = repository.insert_like(
+        ctx.conn, payload.user_id, payload.post_id, ctx.db_timer
+    )
+    if created:
+        strategy.on_like_added(ctx, payload.user_id, payload.post_id)
     return build_response(
         LikeMutationResponse(
             user_id=payload.user_id,
@@ -47,7 +40,7 @@ def add_like(
             created=created,
             deleted=False,
         ),
-        rt,
+        request.state.timing,
     )
 
 
@@ -55,14 +48,15 @@ def add_like(
 def remove_like(
     payload: LikeRequest,
     request: Request,
-    db: Connection = Depends(get_db),
-    redis_client: redis.Redis = Depends(get_cache_client),
-    settings: Settings = Depends(get_settings),
+    strategy: CacheStrategy = Depends(get_active_strategy),
+    ctx: StrategyContext = Depends(get_request_context),
 ) -> ApiResponse[LikeMutationResponse]:
     """Rimuove un like (idempotente)."""
-    rt = start_timing(request)
-    cache = CacheService(redis_client, rt, enabled=settings.cache_enabled)
-    deleted = repository.remove_like(db, payload.user_id, payload.post_id, cache, rt.db)
+    deleted = repository.delete_like(
+        ctx.conn, payload.user_id, payload.post_id, ctx.db_timer
+    )
+    if deleted:
+        strategy.on_like_removed(ctx, payload.user_id, payload.post_id)
     return build_response(
         LikeMutationResponse(
             user_id=payload.user_id,
@@ -70,5 +64,5 @@ def remove_like(
             created=False,
             deleted=deleted,
         ),
-        rt,
+        request.state.timing,
     )

@@ -1,0 +1,16 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Local dev artifacts
+.env
+requests.log
+users.csv
+results/
+locust_report*
+
+# IDE
+.vscode/
+.idea/

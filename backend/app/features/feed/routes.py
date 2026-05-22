@@ -1,34 +1,27 @@
 """
 Endpoint HTTP per la feature feed.
 
-Tre endpoint:
   GET /timeline/{user_id}                            → baseline cronologica
-  GET /feed/{user_id}                                → FYP a 1° grado (default)
+  GET /feed/{user_id}                                → FYP a 1° grado
   GET /feed/{user_id}?with_fof=true                  → FYP esteso al 2° grado
 
-Tenere `/feed/{user_id}` come unico endpoint con parametro `with_fof` rende
-i benchmark direttamente confrontabili (stessa risorsa, stesso parsing
-lato Locust, differenza nei soli numeri).
+Tutte e tre delegano la logica di lettura alla strategy attiva.
 """
 
-import redis
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from psycopg2.extensions import connection as Connection
 
-from ...cache import CacheService, get_cache_client
 from ...config import Settings, get_settings
-from ...core.request_state import start_timing
 from ...core.responses import ApiResponse, build_response
-from ...db import get_db
+from ...strategies.base import CacheStrategy, StrategyContext
+from ...strategies.deps import get_active_strategy, get_request_context
 from ..users import repository as users_repo
-from . import repository
 from .schemas import FeedResponse, TimelineResponse
 
 router = APIRouter(tags=["feed"])
 
 
 def _ranking_weights(settings: Settings) -> dict[str, float]:
-    """Estrae i parametri di ranking nel formato atteso dal repository."""
+    """Estrae i parametri di ranking nel formato atteso dalle query SQL."""
     return {
         "w_recency": settings.fyp_weight_recency,
         "w_affinity": settings.fyp_weight_affinity,
@@ -49,59 +42,46 @@ def _resolve_limit(requested: int | None, settings: Settings) -> int:
 def get_timeline(
     user_id: int,
     request: Request,
-    db: Connection = Depends(get_db),
-    redis_client: redis.Redis = Depends(get_cache_client),
+    strategy: CacheStrategy = Depends(get_active_strategy),
+    ctx: StrategyContext = Depends(get_request_context),
     settings: Settings = Depends(get_settings),
     limit: int | None = Query(default=None, ge=1),
 ) -> ApiResponse[TimelineResponse]:
     """Feed cronologico semplice: i post di chi segui, ordine per data."""
-    rt = start_timing(request)
-    cache = CacheService(redis_client, rt, enabled=settings.cache_enabled)
-    effective_limit = _resolve_limit(limit, settings)
-    if not users_repo.user_exists(db, user_id, rt.db):
+    if not users_repo.user_exists(ctx.conn, user_id, ctx.db_timer):
         raise HTTPException(status_code=404, detail=f"user {user_id} not found")
-    items = repository.fetch_timeline(
-        db,
-        viewer_id=user_id,
-        window_days=settings.fyp_recency_window_days,
-        limit=effective_limit,
-        cache=cache,
-        db_timer=rt.db,
+    items = strategy.fetch_timeline(ctx, user_id, _resolve_limit(limit, settings))
+    return build_response(
+        TimelineResponse(viewer_id=user_id, items=items),
+        request.state.timing,
     )
-    return build_response(TimelineResponse(viewer_id=user_id, items=items), rt)
 
 
 @router.get("/feed/{user_id}", response_model=ApiResponse[FeedResponse])
 def get_feed(
     user_id: int,
     request: Request,
-    db: Connection = Depends(get_db),
-    redis_client: redis.Redis = Depends(get_cache_client),
+    strategy: CacheStrategy = Depends(get_active_strategy),
+    ctx: StrategyContext = Depends(get_request_context),
     settings: Settings = Depends(get_settings),
     limit: int | None = Query(default=None, ge=1),
-    with_fof: bool = Query(default=False, description="Include follower-of-follower (2nd hop)"),
+    with_fof: bool = Query(
+        default=False, description="Include follower-of-follower (2nd hop)"
+    ),
 ) -> ApiResponse[FeedResponse]:
     """
     For You Page con ranking ponderato. Se `with_fof=true` include anche
     i post degli utenti seguiti dai miei follow (affinity ridotta).
     """
-    rt = start_timing(request)
-    cache = CacheService(redis_client, rt, enabled=settings.cache_enabled)
+    if not users_repo.user_exists(ctx.conn, user_id, ctx.db_timer):
+        raise HTTPException(status_code=404, detail=f"user {user_id} not found")
     effective_limit = _resolve_limit(limit, settings)
     weights = _ranking_weights(settings)
-    if not users_repo.user_exists(db, user_id, rt.db):
-        raise HTTPException(status_code=404, detail=f"user {user_id} not found")
-    fetch = repository.fetch_fyp_with_fof if with_fof else repository.fetch_fyp
-    items = fetch(
-        db,
-        viewer_id=user_id,
-        window_days=settings.fyp_recency_window_days,
-        limit=effective_limit,
-        weights=weights,
-        cache=cache,
-        db_timer=rt.db,
-    )
+    if with_fof:
+        items = strategy.fetch_fyp_with_fof(ctx, user_id, effective_limit, weights)
+    else:
+        items = strategy.fetch_fyp(ctx, user_id, effective_limit, weights)
     return build_response(
         FeedResponse(viewer_id=user_id, with_fof=with_fof, items=items),
-        rt,
+        request.state.timing,
     )

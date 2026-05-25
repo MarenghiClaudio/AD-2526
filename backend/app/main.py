@@ -8,10 +8,10 @@ import logging
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 
 from . import cache as cache_module
-from .config import get_settings
+from .config import Settings, get_settings
 from .db import close_pool, init_pool
 from .features.feed.routes import router as feed_router
 from .features.follows.routes import router as follows_router
@@ -66,9 +66,12 @@ def create_app() -> FastAPI:
     app.include_router(feed_router)
 
     @app.get("/health", tags=["meta"])
-    def health() -> dict[str, str]:
+    def health(settings: Settings = Depends(get_settings)) -> dict[str, str]:
         """Smoke-check usato anche dai container orchestrator."""
-        return {"status": "ok"}
+        return {
+            "status": "ok",
+            "cache_strategy": settings.cache_strategy,
+        }
 
     return app
 

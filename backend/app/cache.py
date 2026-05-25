@@ -212,6 +212,195 @@ class CacheService:
         """
         if self._timing.cache_hit is None:
             self._timing.cache_hit = hit
+            
+    # ----------------------------------------------------------------------
+    # 1. ZREVRANGE come lista di id (non model). Per il pattern "ZSET di id".
+    # ----------------------------------------------------------------------
+
+    def zrevrange_ids(self, key: str, end: int) -> list[int] | None:
+        """
+        ZREVRANGE key 0 end → lista di int (interpretati come post_id).
+
+        Ritorna:
+        - `None` se il sorted set non esiste (vero cache miss → rebuild)
+        - `[]` se esiste ma è vuoto (HIT vuoto → niente da fare, NO rebuild)
+        - `[id1, id2, ...]` ordinati per score DESC
+
+        La distinzione None/[] è cruciale: un utente senza follow ha lo ZSET
+        vuoto ma esistente (rebuild andato a buon fine, niente da mostrare).
+        Non vogliamo rifare il rebuild ad ogni read in quel caso.
+
+        Usa pipeline EXISTS+ZREVRANGE per tenere il round-trip a 1.
+        """
+        if not self._enabled:
+            return None
+        with self._timing.cache.measure():
+            pipe = self._client.pipeline()
+            pipe.exists(key)
+            pipe.zrevrange(key, 0, end)
+            exists, members = pipe.execute()
+
+        if not exists:
+            self._record_hit(False)
+            return None
+
+        self._record_hit(True)
+        return [int(m) for m in members]
+
+
+    # ----------------------------------------------------------------------
+    # 2. ZADD bulk: popolamento iniziale di uno ZSET (cold rebuild).
+    # ----------------------------------------------------------------------
+
+    def zadd_bulk(self, key: str, id_score_map: dict[str, float], ttl: int) -> None:
+        """
+        ZADD massivo su una singola chiave + EXPIRE, in pipeline (1 round-trip).
+
+        Uso tipico: rebuild di timeline:{viewer} dopo cold start, popolando
+        da DB tutti i post_id rilevanti per il viewer.
+
+        `id_score_map`: {member: score}. Tipicamente `{str(post_id): timestamp}`.
+        """
+        if not self._enabled or not id_score_map:
+            return
+        with self._timing.cache.measure():
+            pipe = self._client.pipeline()
+            pipe.zadd(key, id_score_map)
+            pipe.expire(key, ttl)
+            pipe.execute()
+
+
+    # ----------------------------------------------------------------------
+    # 3. Fan-out ZADD: un member, N chiavi (push_feed.on_post_created).
+    # ----------------------------------------------------------------------
+
+    def zadd_fanout(
+        self,
+        keys: list[str],
+        member: str,
+        score: float,
+        ttl: int,
+        max_size: int,
+    ) -> None:
+        """
+        Fan-out di un singolo `member` su N sorted set.
+
+        Per ogni chiave: ZCARD + ZADD + EXPIRE in una pipeline. Lo
+        ZREMRANGEBYRANK (trim al max_size) viene eseguito SOLO sui set la
+        cui cardinalità eccede max_size dopo lo ZADD — verificato dal valore
+        di ritorno di ZCARD + ZADD.
+
+        Costo dei comandi sul main-loop Redis:
+        v1 push_feed:  3·N comandi sempre (ZADD + ZREMRANGEBYRANK + EXPIRE).
+        qui:           3·N (ZCARD + ZADD + EXPIRE) + k·N (trim) con k ≪ 1.
+                        In regime stazionario k = 0: solo quando il set
+                        raggiunge max_size per la prima volta paga il trim.
+
+        Two-stage pipeline (ZCARD/ZADD/EXPIRE → analisi → trim selettivo) è
+        deliberato: ZADD ritorna 1/0 a seconda che abbia aggiunto un nuovo
+        member, e usiamo questa info per calcolare card_dopo = card_prima + added.
+        """
+        if not self._enabled or not keys:
+            return
+
+        with self._timing.cache.measure():
+            # Stage 1: ZCARD + ZADD + EXPIRE per ogni chiave
+            stage1 = self._client.pipeline()
+            for k in keys:
+                stage1.zcard(k)
+                stage1.zadd(k, {member: score})
+                stage1.expire(k, ttl)
+            results = stage1.execute()
+
+            # results è [card0, added0, exp0, card1, added1, exp1, ...]
+            to_trim: list[str] = []
+            for idx, k in enumerate(keys):
+                card_before = results[idx * 3]
+                added = results[idx * 3 + 1]  # 1 se nuovo member, 0 se update
+                if card_before + added > max_size:
+                    to_trim.append(k)
+
+            # Stage 2: trim solo dove necessario. In regime stazionario, skip.
+            if to_trim:
+                stage2 = self._client.pipeline()
+                for k in to_trim:
+                    # Tieni le ultime max_size voci (per score DESC).
+                    # Rank negativo: -(max_size+1) lascia gli ultimi max_size.
+                    stage2.zremrangebyrank(k, 0, -(max_size + 1))
+                stage2.execute()
+
+
+    # ----------------------------------------------------------------------
+    # 4. MGET batch di model. Per il pattern "ZSET di id + MGET".
+    # ----------------------------------------------------------------------
+
+    def mget_models(self, keys: list[str], model_cls: type[T]) -> list[T | None]:
+        """
+        MGET batch → lista di model_cls. None nelle posizioni miss.
+
+        Conserva l'ordine: output[i] corrisponde a keys[i]. Chi chiama può
+        quindi sapere quali specifici id sono mancanti e fare fallback DB
+        selettivo (vedi push_feed.fetch_timeline).
+
+        Hit/miss accounting: registra HIT se almeno una chiave era presente.
+        Semplificazione consapevole — per metriche granulari (hit ratio per
+        feed completo) servirebbe esporre `found_count/total` al chiamante.
+        """
+        if not self._enabled or not keys:
+            return [None] * len(keys)
+
+        with self._timing.cache.measure():
+            raw = self._client.mget(keys)
+
+        found = sum(1 for r in raw if r is not None)
+        self._record_hit(found > 0)
+
+        return [
+            model_cls.model_validate_json(r) if r is not None else None
+            for r in raw
+        ]
+
+
+    # ----------------------------------------------------------------------
+    # 5. SET batch di model. Per aggiornamenti multi-chiave in pipeline.
+    # ----------------------------------------------------------------------
+
+    def set_models(self, items: dict[str, BaseModel], ttl: int) -> None:
+        """
+        SETEX batch in pipeline. items = {key: model}, stesso ttl per tutti.
+
+        Uso tipico: dopo un on_follow_* in write_through/push_feed, aggiornare
+        sia `user:{follower}` sia `user:{followed}` in 1 round-trip Redis
+        (anche se le query PG restano due separate).
+
+        NB: Redis non ha un "MSETEX" nativo, ma una pipeline di N SETEX è
+        equivalente in round-trip (1) e diretta da implementare.
+        """
+        if not self._enabled or not items:
+            return
+        with self._timing.cache.measure():
+            pipe = self._client.pipeline()
+            for key, model in items.items():
+                pipe.setex(key, ttl, model.model_dump_json())
+            pipe.execute()
+
+
+    # ----------------------------------------------------------------------
+    # 6. DELETE batch — alias leggibile per i sorted set.
+    # ----------------------------------------------------------------------
+
+    def delete_keys(self, *keys: str) -> None:
+        """
+        Alias di `self.delete(*keys)`. Esiste per leggibilità nelle strategy
+        quando si invalida un sorted set (push_feed.on_follow_*). Se preferisci
+        riusare direttamente `delete`, sostituisci le chiamate nei callsite
+        e ometti questo metodo.
+        """
+        if not self._enabled or not keys:
+            return
+        with self._timing.cache.measure():
+            self._client.delete(*keys)
+
 
 
 # --- FastAPI dependency --------------------------------------------------------

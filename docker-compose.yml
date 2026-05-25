@@ -84,10 +84,13 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    # Su Linux/WSL2 il container ha tipicamente accesso a tutti i core del
-    # sistema. Passiamo --workers 8 come default (allineato al tuning di
-    # Fase 2 su Ryzen 9 6900HX, 8 core fisici).
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "8"]
+    # Il numero di worker dipende dalla CPU dell'host: ottimale = numero
+    # di core fisici. Configurabile tramite UVICORN_WORKERS in backend/.env
+    command: >
+      uvicorn app.main:app
+        --host 0.0.0.0
+        --port 8000
+        --workers ${UVICORN_WORKERS:-4}
 
   # One-shot container per popolare il DB. Si attiva esplicitamente:
   #   docker compose --profile setup run --rm data_loader

@@ -112,7 +112,7 @@ class PushFeedStrategy(CacheStrategy):
         cached = ctx.cache.get_model(key, UserProfile)
         if cached is not None:
             return cached
-        profile = users_repo.query_user_profile(ctx.conn, user_id, ctx.db_timer)
+        profile = users_repo.query_user_profile(ctx.read_conn, user_id, ctx.db_timer)
         if profile is not None:
             ctx.cache.set_model(key, profile, ttl=ctx.settings.cache_ttl_user)
         return profile
@@ -122,7 +122,7 @@ class PushFeedStrategy(CacheStrategy):
         cached = ctx.cache.get_model(key, Post)
         if cached is not None:
             return cached
-        post = posts_repo.query_post(ctx.conn, post_id, ctx.db_timer)
+        post = posts_repo.query_post(ctx.read_conn, post_id, ctx.db_timer)
         if post is not None:
             ctx.cache.set_model(key, post, ttl=ctx.settings.cache_ttl_post)
         return post
@@ -167,7 +167,7 @@ class PushFeedStrategy(CacheStrategy):
             if p is not None:
                 continue
             pid = post_ids[i]
-            fresh = posts_repo.query_post(ctx.conn, pid, ctx.db_timer)
+            fresh = posts_repo.query_post(ctx.read_conn, pid, ctx.db_timer)
             if fresh is not None:
                 ctx.cache.set_model(
                     Keys.post(pid), fresh, ttl=ctx.settings.cache_ttl_post
@@ -206,7 +206,7 @@ class PushFeedStrategy(CacheStrategy):
                                        pieno (ZSET + MGET) senza fallback PG.
         """
         items = feed_repo.query_timeline(
-            ctx.conn,
+            ctx.read_conn,
             viewer_id=viewer_id,
             window_days=ctx.settings.fyp_recency_window_days,
             limit=_MAX_TIMELINE,
@@ -252,7 +252,7 @@ class PushFeedStrategy(CacheStrategy):
         if cached is not None:
             return cached
         items = feed_repo.query_fyp(
-            ctx.conn,
+            ctx.read_conn,
             viewer_id=viewer_id,
             window_days=ctx.settings.fyp_recency_window_days,
             limit=limit,
@@ -274,7 +274,7 @@ class PushFeedStrategy(CacheStrategy):
         if cached is not None:
             return cached
         items = feed_repo.query_fyp_with_fof(
-            ctx.conn,
+            ctx.read_conn,
             viewer_id=viewer_id,
             window_days=ctx.settings.fyp_recency_window_days,
             limit=limit,

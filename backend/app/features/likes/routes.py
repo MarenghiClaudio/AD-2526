@@ -13,9 +13,9 @@ router = APIRouter(prefix="/likes", tags=["likes"])
 
 
 def _validate_actors(ctx: StrategyContext, user_id: int, post_id: int) -> None:
-    if not users_repo.user_exists(ctx.conn, user_id, ctx.db_timer):
+    if not users_repo.user_exists(ctx.read_conn, user_id, ctx.db_timer):
         raise HTTPException(status_code=404, detail=f"user {user_id} not found")
-    if not repository.post_exists(ctx.conn, post_id, ctx.db_timer):
+    if not repository.post_exists(ctx.read_conn, post_id, ctx.db_timer):
         raise HTTPException(status_code=404, detail=f"post {post_id} not found")
 
 

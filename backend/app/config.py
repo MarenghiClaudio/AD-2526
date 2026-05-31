@@ -19,7 +19,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    # --- Database ---
+    # --- Database (write — primary) ---
     db_host: str = "localhost"
     db_port: int = 5432
     db_name: str = "ad"
@@ -28,6 +28,14 @@ class Settings(BaseSettings):
     db_schema: str = "ad"
     db_pool_min_conn: int = 2
     db_pool_max_conn: int = 20
+
+    # --- Database (read — replica) ---
+    # Se db_read_host è vuoto il backend usa il primary anche per le letture
+    # (comportamento identico a prima dell'introduzione della replica).
+    db_read_host: str = ""
+    db_read_port: int = 5432
+    db_read_pool_min_conn: int = 2
+    db_read_pool_max_conn: int = 20
 
     # --- FYP ranking ---
     fyp_weight_recency: float = 1.0

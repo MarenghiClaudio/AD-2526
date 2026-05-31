@@ -28,16 +28,16 @@ class NoCacheStrategy(CacheStrategy):
     def get_user_profile(
         self, ctx: StrategyContext, user_id: int
     ) -> UserProfile | None:
-        return users_repo.query_user_profile(ctx.conn, user_id, ctx.db_timer)
+        return users_repo.query_user_profile(ctx.read_conn, user_id, ctx.db_timer)
 
     def get_post(self, ctx: StrategyContext, post_id: int) -> Post | None:
-        return posts_repo.query_post(ctx.conn, post_id, ctx.db_timer)
+        return posts_repo.query_post(ctx.read_conn, post_id, ctx.db_timer)
 
     def fetch_timeline(
         self, ctx: StrategyContext, viewer_id: int, limit: int
     ) -> list[TimelineItem]:
         return feed_repo.query_timeline(
-            ctx.conn,
+            ctx.read_conn,
             viewer_id=viewer_id,
             window_days=ctx.settings.fyp_recency_window_days,
             limit=limit,
@@ -52,7 +52,7 @@ class NoCacheStrategy(CacheStrategy):
         weights: dict[str, float],
     ) -> list[FeedItem]:
         return feed_repo.query_fyp(
-            ctx.conn,
+            ctx.read_conn,
             viewer_id=viewer_id,
             window_days=ctx.settings.fyp_recency_window_days,
             limit=limit,
@@ -68,7 +68,7 @@ class NoCacheStrategy(CacheStrategy):
         weights: dict[str, float],
     ) -> list[FeedItem]:
         return feed_repo.query_fyp_with_fof(
-            ctx.conn,
+            ctx.read_conn,
             viewer_id=viewer_id,
             window_days=ctx.settings.fyp_recency_window_days,
             limit=limit,

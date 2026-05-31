@@ -1,9 +1,15 @@
 """
 Connection pooling per PostgreSQL.
 
-Si usa psycopg2.pool.ThreadedConnectionPool perché FastAPI esegue le route
-sincrone in un threadpool (ogni richiesta sta su un thread separato).
-Le connessioni vengono prese al boundary HTTP via dependency injection.
+Due pool separati:
+  _write_pool  → primary (scritture + letture coerenti post-write)
+  _read_pool   → replica in streaming replication (letture pure)
+
+Se `db_read_host` è vuoto, _read_pool non viene inizializzato e
+`get_read_db()` preleva connessioni dal write pool (backward compat).
+
+FastAPI esegue le route sincrone in un threadpool (ogni richiesta su un
+thread separato), quindi si usa ThreadedConnectionPool per entrambi i pool.
 """
 
 import logging
@@ -19,53 +25,76 @@ from .config import get_settings
 
 logger = logging.getLogger(__name__)
 
-_pool: ThreadedConnectionPool | None = None
+_write_pool: ThreadedConnectionPool | None = None
+_read_pool: ThreadedConnectionPool | None = None
+
+
+def _make_pool(
+    minconn: int,
+    maxconn: int,
+    host: str,
+    port: int,
+    dbname: str,
+    user: str,
+    password: str,
+) -> ThreadedConnectionPool:
+    return ThreadedConnectionPool(
+        minconn=minconn,
+        maxconn=maxconn,
+        host=host,
+        port=port,
+        dbname=dbname,
+        user=user,
+        password=password,
+        cursor_factory=RealDictCursor,
+    )
 
 
 def init_pool() -> None:
-    """Inizializza il pool al boot dell'app (chiamato da main.py)."""
-    global _pool
-    if _pool is not None:
-        return
+    """Inizializza write pool (e read pool se db_read_host è configurato)."""
+    global _write_pool, _read_pool
     s = get_settings()
-    _pool = ThreadedConnectionPool(
-        minconn=s.db_pool_min_conn,
-        maxconn=s.db_pool_max_conn,
-        host=s.db_host,
-        port=s.db_port,
-        dbname=s.db_name,
-        user=s.db_user,
-        password=s.db_password,
-        cursor_factory=RealDictCursor,
-    )
-    logger.info(
-        "DB pool initialized (min=%d, max=%d, host=%s, db=%s)",
-        s.db_pool_min_conn,
-        s.db_pool_max_conn,
-        s.db_host,
-        s.db_name,
-    )
+
+    if _write_pool is None:
+        _write_pool = _make_pool(
+            s.db_pool_min_conn, s.db_pool_max_conn,
+            s.db_host, s.db_port, s.db_name, s.db_user, s.db_password,
+        )
+        logger.info(
+            "Write pool inizializzato (min=%d, max=%d, host=%s)",
+            s.db_pool_min_conn, s.db_pool_max_conn, s.db_host,
+        )
+
+    if _read_pool is None and s.db_read_host:
+        _read_pool = _make_pool(
+            s.db_read_pool_min_conn, s.db_read_pool_max_conn,
+            s.db_read_host, s.db_read_port, s.db_name, s.db_user, s.db_password,
+        )
+        logger.info(
+            "Read pool inizializzato (min=%d, max=%d, host=%s)",
+            s.db_read_pool_min_conn, s.db_read_pool_max_conn, s.db_read_host,
+        )
+    elif _read_pool is None:
+        logger.info("db_read_host non configurato: letture sul write pool (primary)")
 
 
 def close_pool() -> None:
-    """Chiude tutte le connessioni del pool (chiamato allo shutdown)."""
-    global _pool
-    if _pool is not None:
-        _pool.closeall()
-        _pool = None
-        logger.info("DB pool closed")
+    """Chiude entrambi i pool."""
+    global _write_pool, _read_pool
+    if _write_pool is not None:
+        _write_pool.closeall()
+        _write_pool = None
+        logger.info("Write pool chiuso")
+    if _read_pool is not None:
+        _read_pool.closeall()
+        _read_pool = None
+        logger.info("Read pool chiuso")
 
 
 @contextmanager
-def get_connection() -> Iterator[Connection]:
-    """
-    Acquisisce una connessione dal pool con search_path già impostato.
-    Commit automatico su successo, rollback su eccezione.
-    """
-    if _pool is None:
-        raise RuntimeError("DB pool not initialized; call init_pool() first")
-
-    conn = _pool.getconn()
+def _acquire(pool: ThreadedConnectionPool) -> Iterator[Connection]:
+    """Acquisisce una connessione dal pool con search_path impostato."""
+    conn = pool.getconn()
     try:
         with conn.cursor() as cur:
             cur.execute(f"SET search_path TO {get_settings().db_schema}")
@@ -75,13 +104,37 @@ def get_connection() -> Iterator[Connection]:
         conn.rollback()
         raise
     finally:
-        _pool.putconn(conn)
+        pool.putconn(conn)
+
+
+@contextmanager
+def get_connection() -> Iterator[Connection]:
+    """Connessione dal write pool (primary). Per uso diretto fuori da FastAPI."""
+    if _write_pool is None:
+        raise RuntimeError("DB pool non inizializzato; chiama init_pool() prima")
+    with _acquire(_write_pool) as conn:
+        yield conn
 
 
 def get_db() -> Iterator[Connection]:
     """
-    Dependency FastAPI: yield una connessione gestita dal context manager.
-    Uso negli endpoint: `db: Connection = Depends(get_db)`.
+    Dependency FastAPI → write pool (primary).
+    Usare per POST / PUT / DELETE e per le re-letture dei write hook.
     """
-    with get_connection() as conn:
+    if _write_pool is None:
+        raise RuntimeError("DB pool non inizializzato; chiama init_pool() prima")
+    with _acquire(_write_pool) as conn:
+        yield conn
+
+
+def get_read_db() -> Iterator[Connection]:
+    """
+    Dependency FastAPI → read pool (replica).
+    Se la replica non è configurata, fallback sul write pool (primary).
+    Usare per GET e per le letture pure nelle strategy.
+    """
+    pool = _read_pool if _read_pool is not None else _write_pool
+    if pool is None:
+        raise RuntimeError("DB pool non inizializzato; chiama init_pool() prima")
+    with _acquire(pool) as conn:
         yield conn

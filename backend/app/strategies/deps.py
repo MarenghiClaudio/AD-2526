@@ -17,7 +17,7 @@ from psycopg2.extensions import connection as Connection
 from ..cache import CacheService, get_cache_client
 from ..config import Settings, get_settings
 from ..core.request_state import start_timing
-from ..db import get_db
+from ..db import get_db, get_read_db
 from . import get_strategy
 from .base import CacheStrategy, StrategyContext
 
@@ -37,14 +37,22 @@ def get_active_strategy(
 def get_request_context(
     request: Request,
     db: Connection = Depends(get_db),
+    db_read: Connection = Depends(get_read_db),
     redis_client: redis.Redis = Depends(get_cache_client),
     settings: Settings = Depends(get_settings),
 ) -> StrategyContext:
     """
     Dependency: costruisce il context per la request corrente.
-    Inizializza il `RequestTiming` su `request.state.timing` (lo legge il
-    middleware di logging) e crea il `CacheService` agganciato ai timer.
+
+    db      → write pool (primary): scritture e write-hook re-reads
+    db_read → read pool (replica, o primary se non configurata): letture pure
     """
     rt = start_timing(request)
     cache = CacheService(redis_client, rt, enabled=True)
-    return StrategyContext(conn=db, cache=cache, db_timer=rt.db, settings=settings)
+    return StrategyContext(
+        conn=db,
+        read_conn=db_read,
+        cache=cache,
+        db_timer=rt.db,
+        settings=settings,
+    )

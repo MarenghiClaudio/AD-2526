@@ -15,9 +15,9 @@ router = APIRouter(prefix="/follows", tags=["follows"])
 def _validate_actors(
     ctx: StrategyContext, follower_id: int, followed_id: int
 ) -> None:
-    if not users_repo.user_exists(ctx.conn, follower_id, ctx.db_timer):
+    if not users_repo.user_exists(ctx.read_conn, follower_id, ctx.db_timer):
         raise HTTPException(status_code=404, detail=f"user {follower_id} not found")
-    if not users_repo.user_exists(ctx.conn, followed_id, ctx.db_timer):
+    if not users_repo.user_exists(ctx.read_conn, followed_id, ctx.db_timer):
         raise HTTPException(status_code=404, detail=f"user {followed_id} not found")
 
 

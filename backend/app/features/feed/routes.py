@@ -48,7 +48,7 @@ def get_timeline(
     limit: int | None = Query(default=None, ge=1),
 ) -> ApiResponse[TimelineResponse]:
     """Feed cronologico semplice: i post di chi segui, ordine per data."""
-    if not users_repo.user_exists(ctx.conn, user_id, ctx.db_timer):
+    if not users_repo.user_exists(ctx.read_conn, user_id, ctx.db_timer):
         raise HTTPException(status_code=404, detail=f"user {user_id} not found")
     items = strategy.fetch_timeline(ctx, user_id, _resolve_limit(limit, settings))
     return build_response(
@@ -73,7 +73,7 @@ def get_feed(
     For You Page con ranking ponderato. Se `with_fof=true` include anche
     i post degli utenti seguiti dai miei follow (affinity ridotta).
     """
-    if not users_repo.user_exists(ctx.conn, user_id, ctx.db_timer):
+    if not users_repo.user_exists(ctx.read_conn, user_id, ctx.db_timer):
         raise HTTPException(status_code=404, detail=f"user {user_id} not found")
     effective_limit = _resolve_limit(limit, settings)
     weights = _ranking_weights(settings)

@@ -38,7 +38,7 @@ def create_post(
     ctx: StrategyContext = Depends(get_request_context),
 ) -> ApiResponse[CreatePostResponse]:
     """Crea un nuovo post per conto di user_id."""
-    if not users_repo.user_exists(ctx.conn, payload.user_id, ctx.db_timer):
+    if not users_repo.user_exists(ctx.read_conn, payload.user_id, ctx.db_timer):
         raise HTTPException(status_code=404, detail=f"user {payload.user_id} not found")
     created = repository.insert_post(
         ctx.conn, payload.user_id, payload.content, ctx.db_timer

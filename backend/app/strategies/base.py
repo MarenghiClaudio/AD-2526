@@ -45,9 +45,14 @@ class StrategyContext:
     """
     Tutto ciò che la strategy ha a disposizione per una singola operazione.
     Costruito dalla route, passato a ogni metodo della strategy.
+
+    conn       → write pool (primary): scritture e re-letture nei write hook
+    read_conn  → read pool (replica): letture pure nelle strategy e nelle route
+                 Se la replica non è configurata, read_conn == conn.
     """
 
-    conn: Connection
+    conn: Connection       # write (primary)
+    read_conn: Connection  # read (replica, o primary se non configurata)
     cache: CacheService
     db_timer: Timer
     settings: Settings

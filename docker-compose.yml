@@ -1,14 +1,15 @@
 ## AD-2526 — stack completo per benchmark del caching.
 ##
 ## Servizi:
-##   postgres     → DBMS relazionale (source of truth)
-##   redis        → caching layer (single-node, Fase 2)
-##   backend      → API FastAPI (legge la strategia da CACHE_STRATEGY)
-##   data_loader  → container one-shot: crea schema + carica dataset + genera
-##                  post/like sintetici. Si attiva via --profile setup.
+##   postgres          → PostgreSQL primary (source of truth, writes)
+##   postgres-replica  → PostgreSQL standby in streaming replication (reads)
+##   redis             → caching layer (single-node, Fase 2)
+##   backend           → API FastAPI (legge la strategia da CACHE_STRATEGY)
+##   data_loader       → container one-shot: crea schema + carica dataset + genera
+##                       post/like sintetici. Si attiva via --profile setup.
 ##
 ## Comandi tipici:
-##   # Avvia tutto lo stack (postgres + redis + backend)
+##   # Avvia tutto lo stack (postgres + replica + redis + backend)
 ##   docker compose up -d
 ##
 ##   # Setup iniziale (one-shot, popola il DB partendo da twitter_combined.txt)
@@ -20,8 +21,13 @@
 ##   # Shutdown completo (mantiene i volumi)
 ##   docker compose down
 ##
-##   # Reset totale (CANCELLA i dati di postgres e redis)
+##   # Reset totale (CANCELLA i dati di postgres, replica e redis)
 ##   docker compose down -v
+##
+## NOTA sulla replica:
+##   Il primo avvio di postgres-replica esegue pg_basebackup dal primary.
+##   Se il volume pg_replica_data è già popolato, riparte direttamente.
+##   Per rifare il basebackup da zero: docker compose down -v && docker compose up -d
 
 services:
 
@@ -33,22 +39,54 @@ services:
       POSTGRES_USER:     ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
     ports:
-      - "5432:5432"
+      - "5434:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
       # Bootstrap script: crea lo schema "ad" la prima volta che il volume è vuoto
       - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
-    # max_connections=200 e shared_buffers conservativi per benchmark realistici
+    # max_connections=200 e shared_buffers conservativi per benchmark realistici.
+    # wal_level=replica e max_wal_senders abilitano la streaming replication
+    # verso postgres-replica.
     command: >
       postgres
         -c max_connections=200
         -c shared_buffers=256MB
         -c work_mem=16MB
+        -c wal_level=replica
+        -c max_wal_senders=3
+        -c wal_keep_size=128MB
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-ad}"]
       interval: 5s
       timeout: 3s
       retries: 20
+
+  postgres-replica:
+    build:
+      context: ./infra/postgres/replica
+      dockerfile: Dockerfile
+    container_name: ad2526-postgres-replica
+    environment:
+      # Credenziali ereditate dal primary (pg_basebackup copia tutto)
+      POSTGRES_USER:     ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
+      # Parametri per il pg_basebackup iniziale
+      PRIMARY_HOST:          postgres
+      PRIMARY_PORT:          "5432"
+      REPLICATION_USER:      replicator
+      REPLICATION_PASSWORD:  replicapass
+    ports:
+      - "5435:5432"
+    volumes:
+      - pg_replica_data:/var/lib/postgresql/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
 
   redis:
     image: redis:7-alpine
@@ -75,12 +113,15 @@ services:
       - ./backend/.env
     # Override degli host: dentro la rete Docker non è "localhost"
     environment:
-      DB_HOST:    postgres
-      REDIS_HOST: redis
+      DB_HOST:       postgres
+      DB_READ_HOST:  postgres-replica
+      REDIS_HOST:    redis
     ports:
       - "8000:8000"
     depends_on:
       postgres:
+        condition: service_healthy
+      postgres-replica:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -116,4 +157,5 @@ services:
 
 volumes:
   pg_data:
+  pg_replica_data:
   redis_data:

@@ -12,11 +12,13 @@ Il nome usato come chiave nel dict è anche il valore che va in `CACHE_STRATEGY`
 from .base import CacheStrategy, StrategyContext
 from .cache_aside import CacheAsideStrategy
 from .no_cache import NoCacheStrategy
+from .hybrid import HybridStrategy
 
 # Registro statico — modificare qui per aggiungere nuove strategy.
 STRATEGIES: dict[str, type[CacheStrategy]] = {
     NoCacheStrategy.name: NoCacheStrategy,
     CacheAsideStrategy.name: CacheAsideStrategy,
+    HybridStrategy.name: HybridStrategy,
     # Future:
     #   WriteThroughStrategy.name: WriteThroughStrategy,
     #   PushFeedStrategy.name: PushFeedStrategy,

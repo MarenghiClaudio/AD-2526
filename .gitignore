@@ -11,6 +11,7 @@ venv/
 *.txt
 *.log
 !backend/requirements.txt
+!social_network/requirements.txt
 
 # Benchmark fixtures (generated from DB)
 backend/users.csv

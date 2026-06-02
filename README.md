@@ -49,15 +49,23 @@ Prerequisiti: **Docker Desktop** acceso.
 #    Scarica twitter_combined.txt da SNAP e mettilo in datasets/
 ls datasets/twitter_combined.txt
 
-# 2. Avvia lo stack (postgres + redis + backend)
+# 2. (Opzionale) Tara il numero di worker uvicorn alla tua CPU
+#    Edita /.env (NON backend/.env) e imposta UVICORN_WORKERS = numero
+#    di core FISICI della macchina. Default 8.
+
+# 3. Avvia lo stack (postgres + redis + backend)
 docker compose up -d
 
-# 3. Popola il DB (one-shot, ~minuti)
+# 4. Popola il DB (one-shot, ~minuti)
 docker compose --profile setup run --rm data_loader
 
-# 4. Backend pronto su http://localhost:8000/docs
+# 5. Backend pronto su http://localhost:8000/docs
 curl http://localhost:8000/health
 ```
+
+### Configurazione UVICORN_WORKERS per macchina
+
+Cambiare via `/.env` (root del repo), poi `docker compose up -d --force-recreate backend`.
 
 Per cambiare strategia di caching (vedi sotto), edita `backend/.env`
 (`CACHE_STRATEGY=...`) e riavvia il backend:

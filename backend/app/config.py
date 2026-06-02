@@ -29,13 +29,18 @@ class Settings(BaseSettings):
     db_pool_min_conn: int = 2
     db_pool_max_conn: int = 20
 
-    # --- Database (read — replica) ---
-    # Se db_read_host è vuoto il backend usa il primary anche per le letture
-    # (comportamento identico a prima dell'introduzione della replica).
-    db_read_host: str = ""
+    # --- Database (read — repliche) ---
+    # Lista di host separati da virgola, es. "replica-1,replica-2".
+    # Se vuoto, le letture vanno sul primary (backward compat).
+    db_read_hosts: str = ""
     db_read_port: int = 5432
     db_read_pool_min_conn: int = 2
     db_read_pool_max_conn: int = 20
+
+    @property
+    def db_read_host_list(self) -> list[str]:
+        """Restituisce la lista degli host di replica (può essere vuota)."""
+        return [h.strip() for h in self.db_read_hosts.split(",") if h.strip()]
 
     # --- FYP ranking ---
     fyp_weight_recency: float = 1.0

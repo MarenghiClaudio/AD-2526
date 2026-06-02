@@ -1,32 +1,34 @@
 ## AD-2526 — stack completo per benchmark del caching.
 ##
 ## Servizi:
-##   postgres          → PostgreSQL primary (source of truth, writes)
-##   postgres-replica  → PostgreSQL standby in streaming replication (reads)
-##   redis             → caching layer (single-node, Fase 2)
-##   backend           → API FastAPI (legge la strategia da CACHE_STRATEGY)
-##   data_loader       → container one-shot: crea schema + carica dataset + genera
-##                       post/like sintetici. Si attiva via --profile setup.
+##   postgres            → PostgreSQL primary (source of truth, writes)
+##   postgres-replica    → PostgreSQL standby #1 in streaming replication (reads)
+##   postgres-replica-2  → PostgreSQL standby #2 in streaming replication (reads)
+##   postgres-replica-3  → PostgreSQL standby #3 in streaming replication (reads)
+##   redis               → caching layer (single-node, Fase 2)
+##   backend             → API FastAPI (legge la strategia da CACHE_STRATEGY)
+##   data_loader         → container one-shot: crea schema + carica dataset + genera
+##                         post/like sintetici. Si attiva via --profile setup.
 ##
 ## Comandi tipici:
-##   # Avvia tutto lo stack (postgres + replica + redis + backend)
+##   # Avvia tutto lo stack (postgres + 2 repliche + redis + backend)
 ##   docker compose up -d
 ##
 ##   # Setup iniziale (one-shot, popola il DB partendo da twitter_combined.txt)
 ##   docker compose --profile setup run --rm data_loader
 ##
 ##   # Cambia strategia: edita .env (CACHE_STRATEGY=...) e riavvia il backend
-##   docker compose restart backend
+##   docker compose up -d backend
 ##
 ##   # Shutdown completo (mantiene i volumi)
 ##   docker compose down
 ##
-##   # Reset totale (CANCELLA i dati di postgres, replica e redis)
+##   # Reset totale (CANCELLA tutti i dati)
 ##   docker compose down -v
 ##
-## NOTA sulla replica:
-##   Il primo avvio di postgres-replica esegue pg_basebackup dal primary.
-##   Se il volume pg_replica_data è già popolato, riparte direttamente.
+## NOTA sulle repliche:
+##   Il primo avvio di ogni replica esegue pg_basebackup dal primary.
+##   Se il volume è già popolato, riparte direttamente.
 ##   Per rifare il basebackup da zero: docker compose down -v && docker compose up -d
 
 services:
@@ -42,18 +44,15 @@ services:
       - "5434:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
-      # Bootstrap script: crea lo schema "ad" la prima volta che il volume è vuoto
       - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
-    # max_connections=200 e shared_buffers conservativi per benchmark realistici.
-    # wal_level=replica e max_wal_senders abilitano la streaming replication
-    # verso postgres-replica.
+    # max_wal_senders=6 per supportare 3 repliche + margine.
     command: >
       postgres
         -c max_connections=200
         -c shared_buffers=256MB
         -c work_mem=16MB
         -c wal_level=replica
-        -c max_wal_senders=3
+        -c max_wal_senders=6
         -c wal_keep_size=128MB
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-ad}"]
@@ -67,18 +66,66 @@ services:
       dockerfile: Dockerfile
     container_name: ad2526-postgres-replica
     environment:
-      # Credenziali ereditate dal primary (pg_basebackup copia tutto)
-      POSTGRES_USER:     ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
-      # Parametri per il pg_basebackup iniziale
-      PRIMARY_HOST:          postgres
-      PRIMARY_PORT:          "5432"
-      REPLICATION_USER:      replicator
-      REPLICATION_PASSWORD:  replicapass
+      POSTGRES_USER:        ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD:    ${POSTGRES_PASSWORD:-admin}
+      PRIMARY_HOST:         postgres
+      PRIMARY_PORT:         "5432"
+      REPLICATION_USER:     replicator
+      REPLICATION_PASSWORD: replicapass
     ports:
       - "5435:5432"
     volumes:
       - pg_replica_data:/var/lib/postgresql/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  postgres-replica-2:
+    build:
+      context: ./infra/postgres/replica
+      dockerfile: Dockerfile
+    container_name: ad2526-postgres-replica-2
+    environment:
+      POSTGRES_USER:        ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD:    ${POSTGRES_PASSWORD:-admin}
+      PRIMARY_HOST:         postgres
+      PRIMARY_PORT:         "5432"
+      REPLICATION_USER:     replicator
+      REPLICATION_PASSWORD: replicapass
+    ports:
+      - "5436:5432"
+    volumes:
+      - pg_replica_2_data:/var/lib/postgresql/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  postgres-replica-3:
+    build:
+      context: ./infra/postgres/replica
+      dockerfile: Dockerfile
+    container_name: ad2526-postgres-replica-3
+    environment:
+      POSTGRES_USER:        ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD:    ${POSTGRES_PASSWORD:-admin}
+      PRIMARY_HOST:         postgres
+      PRIMARY_PORT:         "5432"
+      REPLICATION_USER:     replicator
+      REPLICATION_PASSWORD: replicapass
+    ports:
+      - "5437:5432"
+    volumes:
+      - pg_replica_3_data:/var/lib/postgresql/data
     depends_on:
       postgres:
         condition: service_healthy
@@ -95,8 +142,6 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
-    # Persistenza minima (snapshot ogni 60s se ≥1 chiave). Per i benchmark
-    # va bene; in produzione si tunerebbe diversamente.
     command: ["redis-server", "--save", "60", "1", "--appendonly", "no"]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -110,12 +155,12 @@ services:
       dockerfile: Dockerfile
     container_name: ad2526-backend
     env_file:
-      - ./backend/.env
+      - ./.env
     # Override degli host: dentro la rete Docker non è "localhost"
     environment:
-      DB_HOST:       postgres
-      DB_READ_HOST:  postgres-replica
-      REDIS_HOST:    redis
+      DB_HOST:        postgres
+      DB_READ_HOSTS:  postgres-replica,postgres-replica-2,postgres-replica-3
+      REDIS_HOST:     redis
     ports:
       - "8000:8000"
     depends_on:
@@ -123,11 +168,12 @@ services:
         condition: service_healthy
       postgres-replica:
         condition: service_healthy
+      postgres-replica-2:
+        condition: service_healthy
+      postgres-replica-3:
+        condition: service_healthy
       redis:
         condition: service_healthy
-    # Su Linux/WSL2 il container ha tipicamente accesso a tutti i core del
-    # sistema. Passiamo --workers 8 come default (allineato al tuning di
-    # Fase 2 su Ryzen 9 6900HX, 8 core fisici).
     command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "8"]
 
   # One-shot container per popolare il DB. Si attiva esplicitamente:
@@ -139,17 +185,15 @@ services:
     container_name: ad2526-loader
     profiles: [setup]
     environment:
-      DB_HOST:          postgres
-      DB_PORT:          "5432"
-      DB_NAME:          ${POSTGRES_DB:-ad}
-      DB_USER:          ${POSTGRES_USER:-postgres}
-      DB_PASSWORD:      ${POSTGRES_PASSWORD:-admin}
-      DB_SCHEMA:        ad
+      DB_HOST:           postgres
+      DB_PORT:           "5432"
+      DB_NAME:           ${POSTGRES_DB:-ad}
+      DB_USER:           ${POSTGRES_USER:-postgres}
+      DB_PASSWORD:       ${POSTGRES_PASSWORD:-admin}
+      DB_SCHEMA:         ad
       TWITTER_DATA_PATH: /data/twitter_combined.txt
-      RANDOM_SEED:      "42"
+      RANDOM_SEED:       "42"
     volumes:
-      # Monta la cartella locale ./datasets dentro /data del container.
-      # Mettici dentro `twitter_combined.txt` prima di lanciare il loader.
       - ./datasets:/data:ro
     depends_on:
       postgres:
@@ -158,4 +202,6 @@ services:
 volumes:
   pg_data:
   pg_replica_data:
+  pg_replica_2_data:
+  pg_replica_3_data:
   redis_data:

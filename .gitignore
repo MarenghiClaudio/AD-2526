@@ -26,3 +26,4 @@ backend/locust_report*
 # Datasets (file di input pesanti, scaricati a parte)
 datasets/*
 !datasets/README.md
+*.pgdump

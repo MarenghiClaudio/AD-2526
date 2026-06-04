@@ -37,19 +37,6 @@ class HybridStrategy(CacheStrategy):
             )
         )
 
-    def _push_limits(self, ctx: StrategyContext) -> tuple[int, ...]:
-        raw = getattr(
-            ctx.settings,
-            "hybrid_push_timeline_limits",
-            os.getenv("HYBRID_PUSH_TIMELINE_LIMITS", "20,50"),
-        )
-        if isinstance(raw, str):
-            limits = [int(x.strip()) for x in raw.split(",") if x.strip()]
-        elif isinstance(raw, Iterable):
-            limits = [int(x) for x in raw]
-        else:
-            limits = [int(raw)]
-        return tuple(sorted({limit for limit in limits if limit > 0}))
 
     # --- Small utilities ---
 
@@ -75,7 +62,7 @@ class HybridStrategy(CacheStrategy):
             except Exception:
                 # Caching is an optimization. The DB write has already committed;
                 # stale keys will expire by TTL if invalidation fails.
-                return
+                continue
 
     # --- DB helpers ---
 
@@ -88,34 +75,33 @@ class HybridStrategy(CacheStrategy):
         The caller requests threshold + 1 rows: if more than threshold rows are
         returned, the author is treated as celebrity and we avoid fan-out.
         """
-        with ctx.conn.cursor() as cur:
-            cur.execute(
-                """
-                SELECT follower_id
-                FROM follows
-                WHERE followed_id = %s
-                LIMIT %s
-                """,
-                (user_id, limit),
-            )
-            return [
-                int(self._row_value(row, "follower_id"))
-                for row in cur.fetchall()
-            ]
+        with ctx.db_timer.measure():
+            with ctx.conn.cursor() as cur:
+                cur.execute(
+                    """
+                    SELECT follower_id
+                    FROM follows
+                    WHERE followed_id = %s
+                    LIMIT %s
+                    """,
+                    (user_id, limit),
+                )
+                return [
+                    int(self._row_value(row, "follower_id"))
+                    for row in cur.fetchall()
+                ]
 
-    def _delete_timelines_for_limits(
+    def _delete_timelines_for_viewers(
         self,
         ctx: StrategyContext,
         viewer_ids: Iterable[int],
-        limits: tuple[int, ...] | None = None,
     ) -> None:
-        selected_limits = limits if limits is not None else self._push_limits(ctx)
-        keys = [
-            Keys.timeline(viewer_id, limit)
-            for viewer_id in viewer_ids
-            for limit in selected_limits
-        ]
-        self._safe_delete(ctx, *keys)
+        """Invalida tutte le chiavi timeline:{viewer_id}:* a prescindere dal limit."""
+        for viewer_id in viewer_ids:
+            try:
+                ctx.cache.scan_delete(f"timeline:{viewer_id}:*")
+            except Exception:
+                continue
 
     # --- Reads: cache-aside ---
 
@@ -224,7 +210,6 @@ class HybridStrategy(CacheStrategy):
         # Qualsiasi problema qui non deve trasformare POST /posts in 500.
         try:
             threshold = self._celebrity_threshold(ctx)
-            limits = self._push_limits(ctx)
             follower_ids = self._query_follower_ids_limited(
                 ctx, author_id, limit=threshold + 1
             )
@@ -233,7 +218,7 @@ class HybridStrategy(CacheStrategy):
             if len(follower_ids) > threshold:
                 return
 
-            self._delete_timelines_for_limits(ctx, follower_ids, limits)
+            self._delete_timelines_for_viewers(ctx, follower_ids)
         except Exception:
             # Feed/timeline resteranno eventualmente stale fino al TTL.
             return
@@ -252,10 +237,10 @@ class HybridStrategy(CacheStrategy):
         self, ctx: StrategyContext, follower_id: int, followed_id: int
     ) -> None:
         self._safe_delete(ctx, Keys.user(follower_id), Keys.user(followed_id))
-        self._delete_timelines_for_limits(ctx, [follower_id])
+        self._delete_timelines_for_viewers(ctx, [follower_id])
 
     def on_follow_removed(
         self, ctx: StrategyContext, follower_id: int, followed_id: int
     ) -> None:
         self._safe_delete(ctx, Keys.user(follower_id), Keys.user(followed_id))
-        self._delete_timelines_for_limits(ctx, [follower_id])
+        self._delete_timelines_for_viewers(ctx, [follower_id])

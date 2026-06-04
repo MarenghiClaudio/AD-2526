@@ -44,7 +44,7 @@ RESET_PG_CACHE = True
 # RANDOMIZE_ORDER: mescola l'ordine delle strategie prima del benchmark.
 #   Elimina il bias di posizione (prima run = sistema freddo,
 #   ultima run = sistema caldo). Utile per benchmark multi-run.
-RANDOMIZE_ORDER = False
+RANDOMIZE_ORDER = True
 
 # ─── Percorsi (relativi alla root del progetto) ───────────────────
 RESULTS_DIR   = "backend/results"

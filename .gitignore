@@ -10,8 +10,8 @@ venv/
 # Logs and text files
 *.txt
 *.log
-!backend/requirements.txt
-!social_network/requirements.txt
+!requirements.txt
+!requirements-loader.txt
 
 # Benchmark fixtures (generated from DB)
 backend/users.csv

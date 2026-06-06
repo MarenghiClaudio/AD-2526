@@ -178,8 +178,11 @@ e misurare il sistema in condizioni controllate.
 **1 — VM master**
 
 ```bash
-export REPO_URL=https://github.com/<utente>/<repo>
-export DOWNLOAD_DATASET=1
+# Prima cosa: clona il repo sulla VM (serve git, pre-installato su Ubuntu 22.04)
+git clone https://github.com/MarenghiClaudio/AD-2526/tree/distributed-cm /opt/ad2526
+cd /opt/ad2526
+
+# Esegui lo script — scarica il dataset da SNAP e avvia PostgreSQL
 sudo -E bash infra/azure/setup-master.sh
 ```
 
@@ -188,7 +191,9 @@ Aprire TCP **5432** nel NSG Azure verso le VM replica e app.
 **2 — VM replica** (eseguire su ciascuna delle 3)
 
 ```bash
-export REPO_URL=https://github.com/<utente>/<repo>
+git clone https://github.com/MarenghiClaudio/AD-2526/tree/distributed-cm /opt/ad2526
+cd /opt/ad2526
+
 export MASTER_IP=<IP privato master>
 export REPLICA_ID=1          # 1, 2 o 3
 export REPLICATION_PASSWORD=replpassword
@@ -206,7 +211,9 @@ docker compose -f docker-compose.replica.yml exec postgres \
 **3 — VM app**
 
 ```bash
-export REPO_URL=https://github.com/<utente>/<repo>
+git clone https://github.com/MarenghiClaudio/AD-2526/tree/distributed-cm /opt/ad2526
+cd /opt/ad2526
+
 export MASTER_IP=<IP privato master>
 export REPLICA_IPS=<IP-replica1>,<IP-replica2>,<IP-replica3>
 export CACHE_STRATEGY=cache_aside

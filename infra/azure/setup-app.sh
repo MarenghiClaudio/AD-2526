@@ -3,10 +3,11 @@
 # setup-app.sh — VM applicativa: backend FastAPI + Redis + Locust
 #
 # Prerequisiti: Ubuntu 22.04, eseguire come root (sudo -E bash ...)
-# Master e repliche devono essere già in esecuzione.
+# Il repo deve essere già clonato; master e repliche già in esecuzione.
 #
 # Utilizzo:
-#   export REPO_URL=https://github.com/<utente>/<repo>
+#   git clone https://github.com/<utente>/<repo> /opt/ad2526
+#   cd /opt/ad2526
 #   export MASTER_IP=10.0.0.4
 #   export REPLICA_IPS=10.0.0.5,10.0.0.6,10.0.0.7
 #   export CACHE_STRATEGY=cache_aside
@@ -14,7 +15,6 @@
 # =================================================================
 set -euo pipefail
 
-REPO_URL=${REPO_URL:?'Imposta REPO_URL'}
 MASTER_IP=${MASTER_IP:?'Imposta MASTER_IP'}
 REPLICA_IPS=${REPLICA_IPS:?'Imposta REPLICA_IPS (comma-separated)'}
 CACHE_STRATEGY=${CACHE_STRATEGY:-cache_aside}
@@ -37,12 +37,14 @@ apt-get update -qq
 apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-compose-plugin
 systemctl enable --now docker
 
-step "2/4 — Clone repository"
-if [ -d "$PROJECT_DIR/.git" ]; then
-  git -C "$PROJECT_DIR" pull
-else
-  git clone "$REPO_URL" "$PROJECT_DIR"
+step "2/4 — Aggiornamento repository"
+if [ ! -d "$PROJECT_DIR/.git" ]; then
+  echo "ERRORE: $PROJECT_DIR non è un repository git."
+  echo "Clona il repo prima di eseguire questo script:"
+  echo "  git clone https://github.com/<utente>/<repo> $PROJECT_DIR"
+  exit 1
 fi
+git -C "$PROJECT_DIR" pull
 cd "$PROJECT_DIR"
 
 step "3/4 — Configurazione .env"

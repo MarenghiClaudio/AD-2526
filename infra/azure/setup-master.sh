@@ -3,17 +3,19 @@
 # setup-master.sh — VM master: PostgreSQL primary + data loader
 #
 # Prerequisiti: Ubuntu 22.04, eseguire come root (sudo -E bash ...)
+# Il repo deve essere già clonato in PROJECT_DIR prima di eseguire.
 #
 # Utilizzo:
-#   export REPO_URL=https://github.com/<utente>/<repo>
-#   export DOWNLOAD_DATASET=1    # per scaricare twitter_combined.txt
+#   git clone https://github.com/<utente>/<repo> /opt/ad2526
+#   cd /opt/ad2526
 #   sudo -E bash infra/azure/setup-master.sh
+#
+# Il dataset twitter_combined.txt viene scaricato automaticamente da SNAP
+# se non è già presente in datasets/.
 # =================================================================
 set -euo pipefail
 
-REPO_URL=${REPO_URL:?'Imposta REPO_URL'}
 PROJECT_DIR=${PROJECT_DIR:-/opt/ad2526}
-DOWNLOAD_DATASET=${DOWNLOAD_DATASET:-0}
 
 log()  { echo "[$(date '+%H:%M:%S')] $*"; }
 step() { echo ""; echo ">>> $*"; }
@@ -32,26 +34,25 @@ apt-get update -qq
 apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-compose-plugin
 systemctl enable --now docker
 
-step "2/5 — Clone repository"
-if [ -d "$PROJECT_DIR/.git" ]; then
-  git -C "$PROJECT_DIR" pull
-else
-  git clone "$REPO_URL" "$PROJECT_DIR"
+step "2/5 — Aggiornamento repository"
+if [ ! -d "$PROJECT_DIR/.git" ]; then
+  echo "ERRORE: $PROJECT_DIR non è un repository git."
+  echo "Clona il repo prima di eseguire questo script:"
+  echo "  git clone https://github.com/<utente>/<repo> $PROJECT_DIR"
+  exit 1
 fi
+git -C "$PROJECT_DIR" pull
 cd "$PROJECT_DIR"
 
 step "3/5 — Dataset"
 mkdir -p datasets
 if [ -f datasets/twitter_combined.txt ]; then
-  log "Dataset già presente."
-elif [ "$DOWNLOAD_DATASET" = "1" ]; then
+  log "Dataset già presente, skip download."
+else
   log "Download SNAP Twitter dataset..."
   curl -L https://snap.stanford.edu/data/twitter_combined.txt.gz \
     | gunzip > datasets/twitter_combined.txt
-else
-  echo "ERRORE: datasets/twitter_combined.txt non trovato."
-  echo "Esegui con DOWNLOAD_DATASET=1 oppure copia il file via scp."
-  exit 1
+  log "Download completato: $(wc -l < datasets/twitter_combined.txt) righe."
 fi
 
 step "4/5 — Configurazione .env"

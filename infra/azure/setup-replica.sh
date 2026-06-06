@@ -3,10 +3,11 @@
 # setup-replica.sh — VM replica: PostgreSQL hot standby
 #
 # Prerequisiti: Ubuntu 22.04, eseguire come root (sudo -E bash ...)
-# Il master deve essere già in esecuzione e raggiungibile.
+# Il repo deve essere già clonato e il master già in esecuzione.
 #
 # Utilizzo:
-#   export REPO_URL=https://github.com/<utente>/<repo>
+#   git clone https://github.com/<utente>/<repo> /opt/ad2526
+#   cd /opt/ad2526
 #   export MASTER_IP=10.0.0.4
 #   export REPLICA_ID=1          # 1, 2 o 3 (solo per i log)
 #   export REPLICATION_PASSWORD=replpassword
@@ -14,7 +15,6 @@
 # =================================================================
 set -euo pipefail
 
-REPO_URL=${REPO_URL:?'Imposta REPO_URL'}
 MASTER_IP=${MASTER_IP:?'Imposta MASTER_IP con l IP privato del master'}
 REPLICA_ID=${REPLICA_ID:-1}
 REPLICATION_PASSWORD=${REPLICATION_PASSWORD:-replpassword}
@@ -38,12 +38,14 @@ apt-get update -qq
 apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-compose-plugin
 systemctl enable --now docker
 
-step "2/5 — Clone repository"
-if [ -d "$PROJECT_DIR/.git" ]; then
-  git -C "$PROJECT_DIR" pull
-else
-  git clone "$REPO_URL" "$PROJECT_DIR"
+step "2/5 — Aggiornamento repository"
+if [ ! -d "$PROJECT_DIR/.git" ]; then
+  echo "ERRORE: $PROJECT_DIR non è un repository git."
+  echo "Clona il repo prima di eseguire questo script:"
+  echo "  git clone https://github.com/<utente>/<repo> $PROJECT_DIR"
+  exit 1
 fi
+git -C "$PROJECT_DIR" pull
 cd "$PROJECT_DIR"
 
 step "3/5 — Verifica connettività al master ($MASTER_IP:5432)"

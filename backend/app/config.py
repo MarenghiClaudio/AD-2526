@@ -28,6 +28,15 @@ class Settings(BaseSettings):
     db_schema: str = "ad"
     db_pool_min_conn: int = 2
     db_pool_max_conn: int = 20
+    # IP delle repliche PostgreSQL per le letture (comma-separated).
+    # Vuoto = usa db_host anche per le letture (comportamento locale/single-node).
+    db_hosts_read: str = ""
+
+    @property
+    def db_read_hosts(self) -> list[str]:
+        if not self.db_hosts_read.strip():
+            return []
+        return [h.strip() for h in self.db_hosts_read.split(",") if h.strip()]
 
     # --- FYP ranking ---
     fyp_weight_recency: float = 1.0

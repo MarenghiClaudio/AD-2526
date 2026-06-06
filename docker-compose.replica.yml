@@ -1,0 +1,36 @@
+## docker-compose.replica.yml — VM replica (PostgreSQL hot standby)
+##
+## ATTENZIONE: la directory dei dati deve essere pre-inizializzata
+## da pg_basebackup PRIMA di avviare questo compose.
+## Usare setup-replica.sh che gestisce questo passaggio automaticamente.
+##
+## Eseguire dalla root del progetto (dopo setup-replica.sh):
+##   docker compose -f docker-compose.replica.yml up -d
+
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: ad2526-postgres-replica
+    environment:
+      # POSTGRES_PASSWORD serve solo per l'healthcheck (pg_isready)
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      # Directory pre-inizializzata da pg_basebackup in setup-replica.sh
+      - ${REPLICA_DATA_DIR:-/opt/ad2526/replica-data}:/var/lib/postgresql/data
+    command: >
+      postgres
+        -c hot_standby=on
+        -c hot_standby_feedback=on
+        -c max_connections=200
+        -c shared_buffers=512MB
+        -c work_mem=8MB
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped

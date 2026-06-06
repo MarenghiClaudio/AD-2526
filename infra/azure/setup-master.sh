@@ -6,7 +6,7 @@
 # Il repo deve essere già clonato in PROJECT_DIR prima di eseguire.
 #
 # Utilizzo:
-#   git clone https://github.com/<utente>/<repo> /opt/ad2526
+#   git clone --branch cluster-cm git@github.com:MarenghiClaudio/AD-2526.git AD-2526
 #   cd /opt/ad2526
 #   sudo -E bash infra/azure/setup-master.sh
 #
@@ -15,7 +15,7 @@
 # =================================================================
 set -euo pipefail
 
-PROJECT_DIR=${PROJECT_DIR:-/opt/ad2526}
+PROJECT_DIR=${PROJECT_DIR:-$HOME/AD-2526}
 
 log()  { echo "[$(date '+%H:%M:%S')] $*"; }
 step() { echo ""; echo ">>> $*"; }
@@ -38,7 +38,7 @@ step "2/5 — Aggiornamento repository"
 if [ ! -d "$PROJECT_DIR/.git" ]; then
   echo "ERRORE: $PROJECT_DIR non è un repository git."
   echo "Clona il repo prima di eseguire questo script:"
-  echo "  git clone https://github.com/<utente>/<repo> $PROJECT_DIR"
+  echo "  git clone --branch cluster-cm git@github.com:MarenghiClaudio/AD-2526.git $PROJECT_DIR"
   exit 1
 fi
 git -C "$PROJECT_DIR" pull

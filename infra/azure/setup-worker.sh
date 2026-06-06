@@ -11,7 +11,7 @@
 #   - Il master deve essere già configurato e raggiungibile
 #
 # Utilizzo (esempio worker 1 con strategia cache_aside):
-#   export REPO_URL=https://github.com/<utente>/<repo>
+#   export REPO_URL=git@github.com:MarenghiClaudio/AD-2526.git
 #   export MASTER_IP=10.0.0.4          # IP privato della VM master
 #   export CACHE_STRATEGY=cache_aside  # strategia per questo worker
 #   export WORKER_ID=1                 # identificativo (1-4)
@@ -26,7 +26,7 @@ REPO_URL=${REPO_URL:?'REPO_URL non impostato'}
 MASTER_IP=${MASTER_IP:?'MASTER_IP non impostato (IP privato della VM master)'}
 CACHE_STRATEGY=${CACHE_STRATEGY:?'CACHE_STRATEGY non impostato'}
 WORKER_ID=${WORKER_ID:-1}
-PROJECT_DIR=${PROJECT_DIR:-/opt/ad2526}
+PROJECT_DIR=${PROJECT_DIR:-$HOME/AD-2526}
 
 VALID_STRATEGIES="no_cache cache_aside write_through push_feed hybrid"
 if ! echo "$VALID_STRATEGIES" | grep -qw "$CACHE_STRATEGY"; then

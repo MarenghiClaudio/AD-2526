@@ -6,7 +6,7 @@
 # Il repo deve essere già clonato e il master già in esecuzione.
 #
 # Utilizzo:
-#   git clone https://github.com/<utente>/<repo> /opt/ad2526
+#   git clone --branch cluster-cm git@github.com:MarenghiClaudio/AD-2526.git AD-2526
 #   cd /opt/ad2526
 #   export MASTER_IP=10.0.0.4
 #   export REPLICA_ID=1          # 1, 2 o 3 (solo per i log)
@@ -18,8 +18,8 @@ set -euo pipefail
 MASTER_IP=${MASTER_IP:?'Imposta MASTER_IP con l IP privato del master'}
 REPLICA_ID=${REPLICA_ID:-1}
 REPLICATION_PASSWORD=${REPLICATION_PASSWORD:-replpassword}
-PROJECT_DIR=${PROJECT_DIR:-/opt/ad2526}
-DATA_DIR=/opt/ad2526/replica-data
+PROJECT_DIR=${PROJECT_DIR:-$HOME/AD-2526}
+DATA_DIR=$HOME/AD-2526/replica-data
 
 log()  { echo "[$(date '+%H:%M:%S')] $*"; }
 step() { echo ""; echo ">>> $*"; }
@@ -42,7 +42,7 @@ step "2/5 — Aggiornamento repository"
 if [ ! -d "$PROJECT_DIR/.git" ]; then
   echo "ERRORE: $PROJECT_DIR non è un repository git."
   echo "Clona il repo prima di eseguire questo script:"
-  echo "  git clone https://github.com/<utente>/<repo> $PROJECT_DIR"
+  echo "  git clone --branch cluster-cm git@github.com:MarenghiClaudio/AD-2526.git $PROJECT_DIR"
   exit 1
 fi
 git -C "$PROJECT_DIR" pull

@@ -37,6 +37,7 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.
 apt-get update -qq
 apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-compose-plugin
 systemctl enable --now docker
+usermod -aG docker "$SUDO_USER"
 
 step "2/5 — Aggiornamento repository"
 if [ ! -d "$PROJECT_DIR/.git" ]; then

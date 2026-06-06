@@ -25,7 +25,7 @@ services:
       postgres
         -c hot_standby=on
         -c hot_standby_feedback=on
-        -c max_connections=200
+        -c max_connections=400
         -c shared_buffers=512MB
         -c work_mem=8MB
     healthcheck:

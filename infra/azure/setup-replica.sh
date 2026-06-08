@@ -8,14 +8,14 @@
 # Utilizzo:
 #   git clone --branch cluster-cm git@github.com:MarenghiClaudio/AD-2526.git AD-2526
 #   cd /opt/ad2526
-#   export MASTER_IP=10.0.0.4
+#   export MASTER_IP=10.0.1.7
 #   export REPLICA_ID=1          # 1, 2 o 3 (solo per i log)
 #   export REPLICATION_PASSWORD=replpassword
 #   sudo -E bash infra/azure/setup-replica.sh
 # =================================================================
 set -euo pipefail
 
-MASTER_IP=${MASTER_IP:?'Imposta MASTER_IP con l IP privato del master'}
+MASTER_IP=10.0.1.7
 REPLICA_ID=${REPLICA_ID:-1}
 REPLICATION_PASSWORD=${REPLICATION_PASSWORD:-replpassword}
 PROJECT_DIR=${PROJECT_DIR:-$HOME/AD-2526}

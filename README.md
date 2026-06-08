@@ -194,7 +194,6 @@ Aprire TCP **5432** nel NSG Azure verso le VM replica e app.
 git clone --branch cluster-cm git@github.com:MarenghiClaudio/AD-2526.git AD-2526
 cd AD-2526
 
-export MASTER_IP=<IP privato master>
 export REPLICA_ID=1          # 1, 2 o 3
 export REPLICATION_PASSWORD=replpassword
 sudo -E bash infra/azure/setup-replica.sh

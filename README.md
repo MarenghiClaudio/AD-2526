@@ -225,8 +225,9 @@ Ogni run usa una strategia diversa, a parità di infrastruttura:
 # Sulla VM app — run headless con CSV
 docker compose -f docker-compose.app.yml \
   --profile benchmark run --rm locust \
+  -f /mnt/locust/locustfile.py \
   --users 100 --spawn-rate 20 --run-time 5m --headless \
-  --csv=/mnt/locust/results_distributed/cache_aside
+  --csv=/mnt/results/cache_aside
 
 # Cambiare strategia per il run successivo (riavvio in ~3s)
 sed -i 's/CACHE_STRATEGY=.*/CACHE_STRATEGY=write_through/' .env

@@ -58,6 +58,7 @@ services:
       - "8089:8089"
     volumes:
       - ./backend:/mnt/locust:ro
+      - ./results:/mnt/results
     environment:
       LOCUST_HOST: http://backend:8000
     command: >

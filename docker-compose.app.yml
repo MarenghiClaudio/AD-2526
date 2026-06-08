@@ -61,6 +61,7 @@ services:
       - ./results:/mnt/results
     environment:
       LOCUST_HOST: http://backend:8000
+      USERS_CSV: /mnt/locust/users.csv
     command: >
       -f /mnt/locust/locustfile.py
       --host http://backend:8000

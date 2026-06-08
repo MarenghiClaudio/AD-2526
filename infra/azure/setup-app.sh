@@ -8,15 +8,12 @@
 # Utilizzo:
 #   git clone --branch cluster-cm git@github.com:MarenghiClaudio/AD-2526.git AD-2526
 #   cd /opt/ad2526
-#   export MASTER_IP=10.0.0.4
-#   export REPLICA_IPS=10.0.0.5,10.0.0.6,10.0.0.7
-#   export CACHE_STRATEGY=cache_aside
 #   sudo -E bash infra/azure/setup-app.sh
 # =================================================================
 set -euo pipefail
 
-MASTER_IP=${MASTER_IP:?'Imposta MASTER_IP'}
-REPLICA_IPS=${REPLICA_IPS:?'Imposta REPLICA_IPS (comma-separated)'}
+MASTER_IP=10.0.1.7
+REPLICA_IPS=10.0.1.5,10.0.1.4,10.0.1.8
 CACHE_STRATEGY=${CACHE_STRATEGY:-cache_aside}
 PROJECT_DIR=${PROJECT_DIR:-$HOME/AD-2526}
 

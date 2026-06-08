@@ -213,8 +213,6 @@ docker compose -f docker-compose.replica.yml exec postgres \
 git clone --branch cluster-cm git@github.com:MarenghiClaudio/AD-2526.git AD-2526
 cd AD-2526
 
-export MASTER_IP=<IP privato master>
-export REPLICA_IPS=<IP-replica1>,<IP-replica2>,<IP-replica3>
 export CACHE_STRATEGY=cache_aside
 sudo -E bash infra/azure/setup-app.sh
 ```

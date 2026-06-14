@@ -4,10 +4,10 @@ set -e
 STRATEGIES="no_cache cache_aside write_through push_feed hybrid"
 USERS_LIST="10 25 50 75 100 150 200 300"
 RUN_TIME="3m"
-ENV_FILE=~/AD-2526/.env
-COMPOSE="docker compose -f ~/AD-2526/docker-compose.app.yml"
+ENV_FILE="$HOME/AD-2526/.env"
+COMPOSE="docker compose -f $HOME/AD-2526/docker-compose.app.yml"
 
-mkdir -p ~/AD-2526/results
+mkdir -p "$HOME/AD-2526/results"
 
 for STRATEGY in $STRATEGIES; do
   echo ""

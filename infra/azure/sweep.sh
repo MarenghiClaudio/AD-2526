@@ -3,7 +3,7 @@ set -e
 
 STRATEGIES="no_cache cache_aside write_through push_feed hybrid"
 USERS_LIST="10 25 50 75 100 150 200 300"
-RUN_TIME="3m"
+RUN_TIME="5m"
 ENV_FILE="$HOME/AD-2526/.env"
 COMPOSE="docker compose -f $HOME/AD-2526/docker-compose.app.yml"
 
@@ -27,7 +27,7 @@ for STRATEGY in $STRATEGIES; do
       --run-time $RUN_TIME \
       --headless \
       --csv=/mnt/results/${STRATEGY}_${USERS}u \
-      --only-summary
+      --only-summary || true
   done
 done
 

@@ -16,9 +16,7 @@ e si fa un unico delete(*keys) — identico all'approccio di push_feed.
 
 from __future__ import annotations
 
-import logging
 import os
-import time
 from collections.abc import Iterable
 
 from ..cache import Keys
@@ -29,8 +27,6 @@ from ..features.posts.schemas import Post
 from ..features.users import repository as users_repo
 from ..features.users.schemas import UserProfile
 from .base import CacheStrategy, StrategyContext
-
-logger = logging.getLogger(__name__)
 
 
 def _tl_key(viewer_id: int) -> str:
@@ -170,10 +166,7 @@ class HybridStrategy(CacheStrategy):
     def on_post_created(
         self, ctx: StrategyContext, author_id: int, post_id: int
     ) -> None:
-        t0 = time.monotonic()
-
         self._safe_delete(ctx, Keys.user(author_id))
-        t1 = time.monotonic()
 
         try:
             post = posts_repo.query_post(ctx.conn, post_id, ctx.db_timer)
@@ -183,42 +176,15 @@ class HybridStrategy(CacheStrategy):
                 )
         except Exception:
             pass
-        t2 = time.monotonic()
 
         try:
             threshold = self._celebrity_threshold(ctx)
             follower_ids = self._query_follower_ids_limited(
                 ctx, author_id, limit=threshold + 1
             )
-            t3 = time.monotonic()
-            n = len(follower_ids)
-            if n > threshold:
-                logger.warning(
-                    "hybrid.on_post_created celebrity user=%d | "
-                    "del_user=%.1f ms | query_post=%.1f ms | "
-                    "query_followers=%.1f ms (%d rows) | total=%.1f ms",
-                    author_id,
-                    (t1 - t0) * 1000,
-                    (t2 - t1) * 1000,
-                    (t3 - t2) * 1000,
-                    n,
-                    (t3 - t0) * 1000,
-                )
+            if len(follower_ids) > threshold:
                 return
             self._delete_timelines_for_viewers(ctx, follower_ids)
-            t4 = time.monotonic()
-            logger.warning(
-                "hybrid.on_post_created user=%d | "
-                "del_user=%.1f ms | query_post=%.1f ms | "
-                "query_followers=%.1f ms (%d rows) | del_timelines=%.1f ms | total=%.1f ms",
-                author_id,
-                (t1 - t0) * 1000,
-                (t2 - t1) * 1000,
-                (t3 - t2) * 1000,
-                n,
-                (t4 - t3) * 1000,
-                (t4 - t0) * 1000,
-            )
         except Exception:
             return
 

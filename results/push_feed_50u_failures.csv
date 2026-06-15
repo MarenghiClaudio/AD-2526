@@ -1,1 +1,6 @@
 Method,Name,Error,Occurrences
+GET,/timeline/{user_id},HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}'),18183
+POST,/posts,HTTPError('404 Client Error: Not Found for url: /posts'),2188
+GET,/feed/{user_id},HTTPError('404 Client Error: Not Found for url: /feed/{user_id}'),28807
+GET,/users/{user_id},HTTPError('404 Client Error: Not Found for url: /users/{user_id}'),7135
+GET,/feed/{user_id}?with_fof=true,HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true'),14374

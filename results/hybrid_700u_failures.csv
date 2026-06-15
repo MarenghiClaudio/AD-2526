@@ -1,5 +1,18 @@
 Method,Name,Error,Occurrences
-GET,/users/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}'),35
-GET,/feed/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}'),144
-GET,/timeline/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}'),82
-GET,/feed/{user_id}?with_fof=true,HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true'),69
+POST,/likes,HTTPError('500 Server Error: Internal Server Error for url: /likes'),1477
+GET,/timeline/{user_id},HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}'),62418
+GET,/timeline/{user_id},RemoteDisconnected('Remote end closed connection without response'),2
+POST,/posts,HTTPError('404 Client Error: Not Found for url: /posts'),7367
+GET,/feed/{user_id}?with_fof=true,RemoteDisconnected('Remote end closed connection without response'),7
+GET,/users/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}'),7426
+GET,/feed/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}'),29591
+POST,/posts,RemoteDisconnected('Remote end closed connection without response'),3
+GET,/feed/{user_id},HTTPError('404 Client Error: Not Found for url: /feed/{user_id}'),99295
+GET,/users/{user_id},HTTPError('404 Client Error: Not Found for url: /users/{user_id}'),24913
+GET,/timeline/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}'),18484
+GET,/feed/{user_id},RemoteDisconnected('Remote end closed connection without response'),7
+POST,/posts,HTTPError('500 Server Error: Internal Server Error for url: /posts'),2321
+GET,/feed/{user_id}?with_fof=true,HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true'),14808
+GET,/users/{user_id},RemoteDisconnected('Remote end closed connection without response'),2
+POST,/likes,RemoteDisconnected('Remote end closed connection without response'),1
+GET,/feed/{user_id}?with_fof=true,HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true'),49848

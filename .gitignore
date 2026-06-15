@@ -16,13 +16,6 @@ venv/
 # Benchmark fixtures (generated from DB)
 backend/users.csv
 
-# Locust artifacts
-backend/locust_report*
-*_stats.csv
-*_failures.csv
-*_exceptions.csv
-*_stats_history.csv
-
 # Datasets (file di input pesanti, scaricati a parte)
 datasets/*
 !datasets/README.md

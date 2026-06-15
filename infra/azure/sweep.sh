@@ -9,11 +9,6 @@ COMPOSE="docker compose -f $HOME/AD-2526/docker-compose.app.yml"
 
 mkdir -p "$HOME/AD-2526/results"
 
-# Imposta 8 worker uvicorn (2× vCPU sul D4 con hyperthreading)
-grep -q "^UVICORN_WORKERS=" $ENV_FILE \
-  && sed -i "s/^UVICORN_WORKERS=.*/UVICORN_WORKERS=8/" $ENV_FILE \
-  || echo "UVICORN_WORKERS=8" >> $ENV_FILE
-
 for STRATEGY in $STRATEGIES; do
   echo ""
   echo "=============================="
@@ -24,6 +19,10 @@ for STRATEGY in $STRATEGIES; do
   sleep 5
 
   for USERS in $USERS_LIST; do
+    if [ -f "$HOME/AD-2526/results/${STRATEGY}_${USERS}u_stats.csv" ]; then
+      echo "  → Skip $USERS utenti (già presente)"
+      continue
+    fi
     echo "  → $USERS utenti..."
 
     # Azzera il log prima del run

@@ -15,7 +15,7 @@
 # =================================================================
 set -euo pipefail
 
-MASTER_IP=10.0.1.7
+MASTER_IP=${MASTER_IP:-10.0.1.7}
 REPLICA_ID=${REPLICA_ID:-1}
 REPLICATION_PASSWORD=${REPLICATION_PASSWORD:-replpassword}
 PROJECT_DIR=${PROJECT_DIR:-$HOME/AD-2526}

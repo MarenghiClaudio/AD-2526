@@ -229,7 +229,7 @@ def plot_rps_boxplot(df: pd.DataFrame):
     colors = [COLORS[s] for s in STRATEGIES]
 
     fig, ax = plt.subplots(figsize=(9, 5))
-    bp = ax.boxplot(data, patch_artist=True, labels=labels)
+    bp = ax.boxplot(data, patch_artist=True, tick_labels=labels)
     for patch, c in zip(bp["boxes"], colors):
         patch.set_facecolor(c)
         patch.set_alpha(0.7)

@@ -25,6 +25,10 @@ for STRATEGY in $STRATEGIES; do
 
   for USERS in $USERS_LIST; do
     echo "  → $USERS utenti..."
+
+    # Azzera il log prima del run
+    docker exec ad2526-backend sh -c "> /app/requests.log" 2>/dev/null || true
+
     $COMPOSE --profile benchmark run --rm locust \
       -f /mnt/locust/locustfile.py \
       --users $USERS \
@@ -33,6 +37,10 @@ for STRATEGY in $STRATEGIES; do
       --headless \
       --csv=/mnt/results/${STRATEGY}_${USERS}u \
       --only-summary || true
+
+    # Copia il log con naming strategy+users
+    docker cp ad2526-backend:/app/requests.log \
+      "$HOME/AD-2526/results/${STRATEGY}_${USERS}u_requests.log" 2>/dev/null || true
   done
 done
 

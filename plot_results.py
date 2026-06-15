@@ -238,6 +238,100 @@ def plot_rps_boxplot(df: pd.DataFrame):
     plt.xticks(rotation=15, ha="right")
     _save(fig, "rps_boxplot.png")
 
+# ── 6. Analisi requests.log (db_ms, cache_ms, hit ratio) ─────────────────────
+def load_request_logs() -> pd.DataFrame:
+    """Legge tutti i *_requests.log e ritorna un DataFrame con db_ms, cache_ms, cache_hit."""
+    frames = []
+    for f in sorted(RESULTS.glob("*_requests.log")):
+        m = _PAT.match(f.name.replace("_requests.log", "_stats.csv"))
+        if not m:
+            # prova pattern diretto sul nome del log
+            m2 = re.match(r"^([a-z_]+)_(\d+)u_requests\.log$", f.name)
+            if not m2:
+                continue
+            strategy, users = m2.group(1), int(m2.group(2))
+        else:
+            strategy, users = m.group(1), int(m.group(2))
+        if strategy not in STRATEGIES:
+            continue
+        try:
+            df = pd.read_json(f, lines=True)
+            df["strategy"] = strategy
+            df["users"] = users
+            frames.append(df)
+        except Exception:
+            continue
+    if not frames:
+        return pd.DataFrame()
+    return pd.concat(frames, ignore_index=True)
+
+def plot_timing_breakdown(logs: pd.DataFrame):
+    """db_ms mediano vs utenti per strategia."""
+    grp = logs.groupby(["strategy", "users"])[["db_ms", "cache_ms", "total_ms"]].median().reset_index()
+
+    fig, axes = plt.subplots(1, 3, figsize=(16, 5))
+    fig.suptitle("Breakdown tempi per request (mediana)", fontsize=13, fontweight="bold")
+
+    for ax, col, title in [
+        (axes[0], "db_ms",    "DB time mediano (ms)"),
+        (axes[1], "cache_ms", "Cache time mediano (ms)"),
+        (axes[2], "total_ms", "Total time mediano (ms)"),
+    ]:
+        for s in STRATEGIES:
+            sub = grp[grp["strategy"] == s].sort_values("users")
+            if sub.empty:
+                continue
+            ax.plot(sub["users"], sub[col],
+                    label=LABELS[s], color=COLORS[s], marker=MARKERS[s])
+        ax.set_title(title)
+        ax.set_xlabel("Utenti concorrenti")
+        ax.set_ylabel("ms")
+        ax.legend(fontsize=8)
+        ax.grid(True, alpha=0.35)
+
+    fig.tight_layout()
+    _save(fig, "timing_breakdown.png")
+
+def plot_db_ratio(logs: pd.DataFrame):
+    """Rapporto db_ms/total_ms — se alto, bottleneck è il DB."""
+    logs = logs[logs["total_ms"] > 0].copy()
+    logs["db_ratio"] = logs["db_ms"] / logs["total_ms"]
+    grp = logs.groupby(["strategy", "users"])["db_ratio"].median().reset_index()
+
+    fig, ax = plt.subplots(figsize=(9, 5))
+    for s in STRATEGIES:
+        sub = grp[grp["strategy"] == s].sort_values("users")
+        if sub.empty:
+            continue
+        ax.plot(sub["users"], sub["db_ratio"] * 100,
+                label=LABELS[s], color=COLORS[s], marker=MARKERS[s])
+    ax.axhline(50, color="gray", linestyle="--", linewidth=1, label="50% (soglia)")
+    ax.set_xlabel("Utenti concorrenti")
+    ax.set_ylabel("db_ms / total_ms (%)")
+    ax.set_title("Quota DB sul tempo totale — >50% = bottleneck DB")
+    ax.legend(fontsize=8)
+    _save(fig, "db_ratio.png")
+
+def plot_cache_hit_ratio(logs: pd.DataFrame):
+    """Hit ratio Redis per strategia al variare del carico."""
+    reads = logs[logs["cache_hit"].notna()].copy()
+    grp = reads.groupby(["strategy", "users"])["cache_hit"].mean().reset_index()
+    grp["hit_pct"] = grp["cache_hit"] * 100
+
+    fig, ax = plt.subplots(figsize=(9, 5))
+    for s in STRATEGIES:
+        sub = grp[grp["strategy"] == s].sort_values("users")
+        if sub.empty:
+            continue
+        ax.plot(sub["users"], sub["hit_pct"],
+                label=LABELS[s], color=COLORS[s], marker=MARKERS[s])
+    ax.set_xlabel("Utenti concorrenti")
+    ax.set_ylabel("Cache hit ratio (%)")
+    ax.set_title("Cache hit ratio per strategia")
+    ax.set_ylim(0, 105)
+    ax.legend(fontsize=8)
+    _save(fig, "cache_hit_ratio.png")
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     print(f"Carico dati da {RESULTS} ...")
@@ -254,5 +348,14 @@ if __name__ == "__main__":
     plot_per_endpoint(df)
     plot_heatmap(df, target_users=100)
     plot_rps_boxplot(df)
+
+    logs = load_request_logs()
+    if not logs.empty:
+        print(f"\n  Request logs trovati: {len(logs):,} righe")
+        plot_timing_breakdown(logs)
+        plot_db_ratio(logs)
+        plot_cache_hit_ratio(logs)
+    else:
+        print("\n  Nessun *_requests.log trovato — grafici timing skippati.")
 
     print("\nFatto.")

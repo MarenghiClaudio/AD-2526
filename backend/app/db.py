@@ -13,6 +13,7 @@ in modo trasparente: il codice funziona identico in locale (single-node).
 """
 
 import logging
+import os
 import threading
 from contextlib import contextmanager
 from typing import Iterator
@@ -31,10 +32,22 @@ _read_pools: list[ThreadedConnectionPool] = []
 _read_counter: int = 0
 _read_lock = threading.Lock()
 
+# Semaforo per pool: rende l'acquisizione di una connessione *bloccante*.
+# ThreadedConnectionPool.getconn() lancia PoolError appena il pool è pieno;
+# con un semaforo inizializzato a maxconn i thread in eccesso ATTENDONO una
+# connessione libera invece di fallire con 500. Questo trasforma la
+# saturazione del DB in degradazione di latenza (richieste in coda), che è il
+# comportamento corretto per misurare il DB come bottleneck.
+_pool_semaphores: dict[int, threading.Semaphore] = {}
+
+# Timeout massimo di attesa per una connessione. Se scade, la richiesta
+# fallisce davvero (il DB non riesce a smaltire la coda): saturazione genuina.
+_ACQUIRE_TIMEOUT = float(os.getenv("DB_POOL_ACQUIRE_TIMEOUT", "30"))
+
 
 def _make_pool(host: str, min_conn: int, max_conn: int) -> ThreadedConnectionPool:
     s = get_settings()
-    return ThreadedConnectionPool(
+    pool = ThreadedConnectionPool(
         minconn=min_conn,
         maxconn=max_conn,
         host=host,
@@ -44,6 +57,8 @@ def _make_pool(host: str, min_conn: int, max_conn: int) -> ThreadedConnectionPoo
         password=s.db_password,
         cursor_factory=RealDictCursor,
     )
+    _pool_semaphores[id(pool)] = threading.Semaphore(max_conn)
+    return pool
 
 
 def init_pool() -> None:
@@ -75,6 +90,7 @@ def close_pool() -> None:
     """Chiude il pool di scrittura."""
     global _write_pool
     if _write_pool is not None:
+        _pool_semaphores.pop(id(_write_pool), None)
         _write_pool.closeall()
         _write_pool = None
         logger.info("Write pool closed")
@@ -84,6 +100,7 @@ def close_read_pools() -> None:
     """Chiude tutti i pool di lettura."""
     global _read_pools
     for pool in _read_pools:
+        _pool_semaphores.pop(id(pool), None)
         pool.closeall()
     _read_pools = []
     logger.info("Read pools closed")
@@ -100,7 +117,17 @@ def _next_read_pool() -> ThreadedConnectionPool:
 
 @contextmanager
 def _conn_from(pool: ThreadedConnectionPool) -> Iterator[Connection]:
-    """Acquisisce una connessione dal pool dato, con commit/rollback automatico."""
+    """Acquisisce una connessione dal pool dato, con commit/rollback automatico.
+
+    L'acquisizione è bloccante: se il pool è pieno il thread attende (fino a
+    _ACQUIRE_TIMEOUT) che una connessione si liberi, invece di fallire subito
+    con PoolError. Così la saturazione si manifesta come latenza, non come 500.
+    """
+    sem = _pool_semaphores.get(id(pool))
+    if sem is not None and not sem.acquire(timeout=_ACQUIRE_TIMEOUT):
+        raise psycopg2.pool.PoolError(
+            f"timeout ({_ACQUIRE_TIMEOUT}s) in attesa di una connessione dal pool"
+        )
     conn = pool.getconn()
     try:
         with conn.cursor() as cur:
@@ -112,6 +139,8 @@ def _conn_from(pool: ThreadedConnectionPool) -> Iterator[Connection]:
         raise
     finally:
         pool.putconn(conn)
+        if sem is not None:
+            sem.release()
 
 
 @contextmanager

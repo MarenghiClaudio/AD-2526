@@ -1,0 +1,16 @@
+{"ts": 1781611354.0880132, "method": "GET", "path": "/health", "status": 200, "total_ms": 9.228, "db_ms": 0.0, "cache_ms": 0.0, "cache_hit": null, "client": "127.0.0.1"}
+{"ts": 1781611355.5066419, "method": "GET", "path": "/users/19599956", "status": 200, "total_ms": 9.81, "db_ms": 4.24, "cache_ms": 0.0, "cache_hit": null, "user_id": "19599956", "client": "172.18.0.4"}
+{"ts": 1781611355.5090597, "method": "GET", "path": "/timeline/91178149", "status": 200, "total_ms": 12.38, "db_ms": 6.072, "cache_ms": 0.0, "cache_hit": null, "user_id": "91178149", "client": "172.18.0.4"}
+{"ts": 1781611355.515385, "method": "GET", "path": "/timeline/91178149", "status": 200, "total_ms": 19.608, "db_ms": 5.229, "cache_ms": 0.0, "cache_hit": null, "user_id": "91178149", "client": "172.18.0.4"}
+{"ts": 1781611355.5170076, "method": "GET", "path": "/timeline/91178149", "status": 200, "total_ms": 17.758, "db_ms": 7.248, "cache_ms": 0.0, "cache_hit": null, "user_id": "91178149", "client": "172.18.0.4"}
+{"ts": 1781611355.5179179, "method": "GET", "path": "/feed/78193349", "status": 200, "total_ms": 18.984, "db_ms": 8.197, "cache_ms": 0.0, "cache_hit": null, "user_id": "78193349", "client": "172.18.0.4"}
+{"ts": 1781611355.519986, "method": "GET", "path": "/feed/19599956", "status": 200, "total_ms": 22.007, "db_ms": 7.768, "cache_ms": 0.0, "cache_hit": null, "user_id": "19599956", "client": "172.18.0.4"}
+{"ts": 1781611355.5280023, "method": "GET", "path": "/feed/19599956", "status": 200, "total_ms": 30.056, "db_ms": 6.971, "cache_ms": 0.0, "cache_hit": null, "user_id": "19599956", "client": "172.18.0.4"}
+{"ts": 1781611355.5291922, "method": "GET", "path": "/feed/91178149", "status": 200, "total_ms": 32.401, "db_ms": 7.689, "cache_ms": 0.0, "cache_hit": null, "user_id": "91178149", "client": "172.18.0.4"}
+{"ts": 1781611355.6046464, "method": "GET", "path": "/feed/19599956", "status": 200, "total_ms": 107.899, "db_ms": 94.203, "cache_ms": 0.0, "cache_hit": null, "user_id": "19599956", "client": "172.18.0.4"}
+{"ts": 1781611355.663404, "method": "GET", "path": "/timeline/16530805", "status": 200, "total_ms": 4.287, "db_ms": 2.313, "cache_ms": 0.0, "cache_hit": null, "user_id": "16530805", "client": "172.18.0.4"}
+{"ts": 1781611355.668599, "method": "GET", "path": "/feed/91178149", "status": 200, "total_ms": 171.837, "db_ms": 165.529, "cache_ms": 0.0, "cache_hit": null, "user_id": "91178149", "client": "172.18.0.4"}
+{"ts": 1781611355.697654, "method": "GET", "path": "/feed/91178149", "status": 200, "total_ms": 9.843, "db_ms": 7.79, "cache_ms": 0.0, "cache_hit": null, "user_id": "91178149", "client": "172.18.0.4"}
+{"ts": 1781611355.7040415, "method": "GET", "path": "/users/91178149", "status": 200, "total_ms": 2.23, "db_ms": 0.846, "cache_ms": 0.0, "cache_hit": null, "user_id": "91178149", "client": "172.18.0.4"}
+{"ts": 1781611355.7240124, "method": "GET", "path": "/feed/91178149", "status": 200, "total_ms": 2.917, "db_ms": 1.534, "cache_ms": 0.0, "cache_hit": null, "user_id": "91178149", "client": "172.18.0.4"}
+{"ts": 1781611355.7242682, "method": "GET", "path": "/feed/22263527", "status": 200, "total_ms": 102.953, "db_ms": 100.582, "cache_ms": 0.0, "cache_hit": null, "user_id": "22263527", "client": "172.18.0.4"}

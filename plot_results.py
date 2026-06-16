@@ -87,7 +87,8 @@ def load_all() -> pd.DataFrame:
         df = pd.read_csv(f)
         df["strategy"] = strategy
         df["users"]    = users
-        df["endpoint"] = df["Type"].str.strip() + " " + df["Name"].str.strip()
+        df = df.dropna(subset=["Name"])
+        df["endpoint"] = df["Type"].astype(str).str.strip() + " " + df["Name"].astype(str).str.strip()
         frames.append(df)
     if not frames:
         raise FileNotFoundError(f"Nessun *_Xu_stats.csv trovato in {RESULTS}")

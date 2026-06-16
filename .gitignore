@@ -9,7 +9,6 @@ venv/
 
 # Logs and text files
 *.txt
-*.log
 !requirements.txt
 !requirements-loader.txt
 

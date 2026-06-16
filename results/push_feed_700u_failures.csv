@@ -1,13 +1,35 @@
 Method,Name,Error,Occurrences
-POST,/likes,HTTPError('500 Server Error: Internal Server Error for url: /likes'),1520
-GET,/timeline/{user_id},HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}'),62217
-POST,/posts,HTTPError('404 Client Error: Not Found for url: /posts'),7603
-GET,/users/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}'),7536
-GET,/feed/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}'),29819
-GET,/feed/{user_id},HTTPError('404 Client Error: Not Found for url: /feed/{user_id}'),100369
-GET,/users/{user_id},HTTPError('404 Client Error: Not Found for url: /users/{user_id}'),24934
-GET,/feed/{user_id},"ConnectionResetError(104, 'Connection reset by peer')",1
-GET,/timeline/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}'),18663
-POST,/posts,HTTPError('500 Server Error: Internal Server Error for url: /posts'),2259
-GET,/feed/{user_id}?with_fof=true,HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true'),14804
-GET,/feed/{user_id}?with_fof=true,HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true'),50501
+POST,/likes,HTTPError('500 Server Error: Internal Server Error for url: /likes'),405
+GET,/users/{user_id},"ConnectionResetError(104, 'Connection reset by peer')",66
+GET,/timeline/{user_id},HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}'),65609
+GET,/timeline/{user_id},RemoteDisconnected('Remote end closed connection without response'),30
+POST,/posts,"ConnectionResetError(104, 'Connection reset by peer')",15
+GET,/timeline/{user_id},"gaierror(-3, 'Temporary failure in name resolution')",209
+GET,/feed/{user_id}?with_fof=true,"ConnectionResetError(104, 'Connection reset by peer')",113
+POST,/posts,HTTPError('404 Client Error: Not Found for url: /posts'),7774
+GET,/feed/{user_id},"gaierror(-3, 'Temporary failure in name resolution')",348
+GET,/users/{user_id},"ConnectionRefusedError(111, 'Connection refused')",327
+GET,/feed/{user_id}?with_fof=true,RemoteDisconnected('Remote end closed connection without response'),24
+GET,/timeline/{user_id},"ConnectionResetError(104, 'Connection reset by peer')",173
+GET,/users/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}'),1878
+POST,/likes,"ConnectionRefusedError(111, 'Connection refused')",65
+GET,/users/{user_id},"gaierror(-3, 'Temporary failure in name resolution')",71
+GET,/feed/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}'),7744
+GET,/timeline/{user_id},"ConnectionRefusedError(111, 'Connection refused')",838
+POST,/posts,RemoteDisconnected('Remote end closed connection without response'),2
+GET,/feed/{user_id},HTTPError('404 Client Error: Not Found for url: /feed/{user_id}'),105340
+GET,/users/{user_id},HTTPError('404 Client Error: Not Found for url: /users/{user_id}'),26262
+GET,/feed/{user_id}?with_fof=true,"gaierror(-3, 'Temporary failure in name resolution')",179
+GET,/feed/{user_id},"ConnectionResetError(104, 'Connection reset by peer')",239
+GET,/timeline/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}'),4836
+POST,/posts,"ConnectionRefusedError(111, 'Connection refused')",117
+GET,/feed/{user_id}?with_fof=true,"ConnectionRefusedError(111, 'Connection refused')",660
+GET,/feed/{user_id},"ConnectionRefusedError(111, 'Connection refused')",1338
+GET,/feed/{user_id},RemoteDisconnected('Remote end closed connection without response'),36
+POST,/posts,HTTPError('500 Server Error: Internal Server Error for url: /posts'),585
+GET,/feed/{user_id}?with_fof=true,HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true'),3704
+GET,/users/{user_id},RemoteDisconnected('Remote end closed connection without response'),14
+POST,/posts,"gaierror(-3, 'Temporary failure in name resolution')",30
+POST,/likes,"gaierror(-3, 'Temporary failure in name resolution')",19
+POST,/likes,"ConnectionResetError(104, 'Connection reset by peer')",12
+GET,/feed/{user_id}?with_fof=true,HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true'),52724

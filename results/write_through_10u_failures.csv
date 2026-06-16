@@ -1,6 +1,12 @@
 Method,Name,Error,Occurrences
-GET,/timeline/{user_id},HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}'),3665
-POST,/posts,HTTPError('404 Client Error: Not Found for url: /posts'),440
-GET,/feed/{user_id},HTTPError('404 Client Error: Not Found for url: /feed/{user_id}'),5784
-GET,/users/{user_id},HTTPError('404 Client Error: Not Found for url: /users/{user_id}'),1542
-GET,/feed/{user_id}?with_fof=true,HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true'),2764
+POST,/likes,HTTPError('500 Server Error: Internal Server Error for url: /likes'),4
+GET,/timeline/{user_id},HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}'),2067
+POST,/posts,HTTPError('404 Client Error: Not Found for url: /posts'),282
+GET,/users/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}'),15
+GET,/feed/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}'),87
+GET,/feed/{user_id},HTTPError('404 Client Error: Not Found for url: /feed/{user_id}'),3401
+GET,/users/{user_id},HTTPError('404 Client Error: Not Found for url: /users/{user_id}'),805
+GET,/timeline/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}'),43
+POST,/posts,HTTPError('500 Server Error: Internal Server Error for url: /posts'),6
+GET,/feed/{user_id}?with_fof=true,HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true'),47
+GET,/feed/{user_id}?with_fof=true,HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true'),1586

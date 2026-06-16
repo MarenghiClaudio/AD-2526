@@ -1,0 +1,5 @@
+Method,Name,Error,Occurrences
+POST,/likes,HTTPError('500 Server Error: Internal Server Error for url: /likes'),1
+GET,/feed/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}'),25
+GET,/timeline/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}'),9
+GET,/feed/{user_id}?with_fof=true,HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true'),6

@@ -1,0 +1,8 @@
+Method,Name,Error,Occurrences
+POST,/likes,HTTPError('500 Server Error: Internal Server Error for url: /likes'),379
+GET,/users/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}'),1943
+GET,/feed/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}'),7760
+GET,/timeline/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}'),4841
+POST,/posts,HTTPError('500 Server Error: Internal Server Error for url: /posts'),643
+GET,/feed/{user_id}?with_fof=true,HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true'),3913
+GET,/users/{user_id},RemoteDisconnected('Remote end closed connection without response'),1

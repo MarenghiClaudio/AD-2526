@@ -46,7 +46,7 @@ if [ ! -d "$PROJECT_DIR/.git" ]; then
   echo "  git clone --branch cluster-cm git@github.com:MarenghiClaudio/AD-2526.git $PROJECT_DIR"
   exit 1
 fi
-git -C "$PROJECT_DIR" pull
+git -C "$PROJECT_DIR" pull || echo "  [warn] git pull fallito (root senza chiave SSH) — skip."
 cd "$PROJECT_DIR"
 
 step "3/5 — Verifica connettività al master ($MASTER_IP:5432)"

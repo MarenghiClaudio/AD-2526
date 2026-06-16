@@ -35,7 +35,8 @@ for STRATEGY in $STRATEGIES; do
       --run-time $RUN_TIME \
       --headless \
       --csv=/mnt/results/${STRATEGY}_${USERS}u \
-      --only-summary || true
+      --only-summary \
+      --csv-full-history || true
 
     # Copia il log con naming strategy+users
     docker cp ad2526-backend:/app/requests.log \

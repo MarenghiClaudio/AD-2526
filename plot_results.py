@@ -7,6 +7,7 @@ Dipendenze:  pip install pandas matplotlib numpy
 Output: charts/  (PNG 150 dpi, pronti per documentazione Word/LaTeX).
 """
 
+import sys
 from pathlib import Path
 import re
 import numpy as np
@@ -17,8 +18,10 @@ import matplotlib.pyplot as plt
 
 # ── Percorsi ─────────────────────────────────────────────────────────────────
 ROOT    = Path(__file__).parent
-RESULTS = ROOT / "results"
-CHARTS  = ROOT / "charts"
+# Accetta cartella risultati come argomento: py plot_results.py results/run2_...
+RESULTS = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "results"
+RESULTS = RESULTS if RESULTS.is_absolute() else ROOT / RESULTS
+CHARTS  = RESULTS / "charts"
 CHARTS.mkdir(exist_ok=True)
 
 # ── Strategie ─────────────────────────────────────────────────────────────────

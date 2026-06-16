@@ -1,0 +1,3 @@
+Method,Name,Error,Occurrences
+POST,/likes,HTTPError('500 Server Error: Internal Server Error for url: /likes'),63
+POST,/posts,HTTPError('500 Server Error: Internal Server Error for url: /posts'),94

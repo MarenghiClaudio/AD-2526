@@ -1,0 +1,41 @@
+# =================================================================
+# Un nodo Redis Cluster. Stesso file lanciato su VM-1, VM-2, VM-3.
+#
+# Usa network_mode: host perché il cluster Redis attraversa VM diverse:
+# il gossip protocol (porta bus 16379) e il redirect MOVED/ASK devono
+# usare gli IP privati reali delle VM, non gli IP interni di Docker.
+#
+# cluster-announce-ip DEVE essere l'IP privato della VM, così gli altri
+# nodi sanno come raggiungerlo. Viene passato via env REDIS_ANNOUNCE_IP.
+#
+# Avvio (su ogni VM):
+#   REDIS_ANNOUNCE_IP=$(hostname -I | awk '{print $1}') \
+#     docker compose -f infra/redis-cluster/docker-compose.redis-node.yml up -d
+# oppure usa setup-node.sh che lo fa in automatico.
+# =================================================================
+
+services:
+  redis-node:
+    image: redis:7-alpine
+    container_name: ad2526-redis-cluster
+    network_mode: host
+    command: >
+      redis-server
+        --port 6379
+        --cluster-enabled yes
+        --cluster-config-file /data/nodes.conf
+        --cluster-node-timeout 5000
+        --cluster-announce-ip ${REDIS_ANNOUNCE_IP}
+        --cluster-announce-port 6379
+        --cluster-announce-bus-port 16379
+        --appendonly no
+        --save ""
+        --protected-mode no
+        --maxmemory ${REDIS_MAXMEMORY:-0}
+        --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_cluster_data:/data
+    restart: unless-stopped
+
+volumes:
+  redis_cluster_data:

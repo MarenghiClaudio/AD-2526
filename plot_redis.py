@@ -224,6 +224,45 @@ def plot_exp_d():
     _save(fig, "expD_capacity_vs_nodes.png")
 
 
+def plot_exp_e():
+    f = REDIS_DIR / "expE_failover_replica" / "timeline.csv"
+    if not f.exists():
+        print("  [E] timeline.csv (HA) assente, skip.")
+        return
+    import csv
+    t, ops, reach = [], [], []
+    with open(f) as fh:
+        for row in csv.DictReader(fh):
+            t.append(int(row["t_sec"]))
+            ops.append(int(row["total_ops_sec"]))
+            reach.append(int(row["reachable_nodes"]))
+
+    # kill = primo calo di reachable; recovery = quando ops risale stabilmente
+    kill_t = next((t[i] for i in range(1, len(reach)) if reach[i] < reach[i - 1]), None)
+    recov_t = None
+    if kill_t is not None:
+        peak = max(ops) if ops else 0
+        for i in range(t.index(kill_t) + 1, len(ops)):
+            if ops[i] > peak * 0.5:
+                recov_t = t[i]
+                break
+
+    fig, ax = plt.subplots(figsize=(11, 5))
+    ax.plot(t, ops, "-", color="#2980b9", label="Throughput aggregato (ops/sec)")
+    if kill_t is not None:
+        ax.axvline(kill_t, color="#e74c3c", linestyle="--", linewidth=2,
+                   label=f"Kill master (t={kill_t}s)")
+    if recov_t is not None:
+        ax.axvline(recov_t, color="#27ae60", linestyle="--", linewidth=2,
+                   label=f"Recovery (t={recov_t}s) — downtime ~{recov_t - kill_t}s")
+    ax.set_xlabel("Tempo (s)")
+    ax.set_ylabel("Ops/sec (somma 6 nodi)")
+    ax.set_title("Failover CON repliche — promozione automatica e downtime",
+                 fontweight="bold")
+    ax.legend()
+    _save(fig, "expE_failover_replica.png")
+
+
 if __name__ == "__main__":
     print(f"Carico dati Redis da {REDIS_DIR}")
     print(f"Output in {CHARTS}/")
@@ -231,4 +270,5 @@ if __name__ == "__main__":
     plot_exp_b()
     plot_exp_c()
     plot_exp_d()
+    plot_exp_e()
     print("Fatto.")

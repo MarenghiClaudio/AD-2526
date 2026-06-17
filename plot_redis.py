@@ -196,10 +196,39 @@ def plot_exp_c():
     _save(fig, "expC_failover_timeline.png")
 
 
+def plot_exp_d():
+    f = REDIS_DIR / "expD_capacity" / "capacity.csv"
+    if not f.exists():
+        print("  [D] capacity.csv assente, skip.")
+        return
+    import csv
+    nodes, keys, evic = [], [], []
+    with open(f) as fh:
+        for row in csv.DictReader(fh):
+            nodes.append(int(row["nodes"]))
+            keys.append(int(row["keys_total"]))
+            evic.append(int(row["evicted_total"]))
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.bar([n - 0.0 for n in nodes], keys, width=0.5, color="#16a085",
+           label="Chiavi trattenute")
+    if keys and keys[0] > 0:
+        ideal = [keys[0] * n / nodes[0] for n in nodes]
+        ax.plot(nodes, ideal, "--o", color="gray", label="Scaling lineare ideale")
+    ax.set_xticks(nodes)
+    ax.set_xlabel("Numero di nodi (shard)")
+    ax.set_ylabel("Chiavi trattenute in cache")
+    ax.set_title("Esperimento D — capacità di cache vs nodi (sharding)",
+                 fontweight="bold")
+    ax.legend()
+    _save(fig, "expD_capacity_vs_nodes.png")
+
+
 if __name__ == "__main__":
     print(f"Carico dati Redis da {REDIS_DIR}")
     print(f"Output in {CHARTS}/")
     plot_exp_a()
     plot_exp_b()
     plot_exp_c()
+    plot_exp_d()
     print("Fatto.")

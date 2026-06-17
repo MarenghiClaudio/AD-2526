@@ -62,9 +62,19 @@ MEMTIER_PID=$!
 # --- A metà run, ferma il nodo ----------------------------------------
 sleep $(( TEST_TIME / 2 ))
 echo ""
-echo ">>> >>> KILL del nodo $KILL_NODE a t=$(( TEST_TIME / 2 ))s <<< <<<"
-ssh "Karzaladmin@$KILL_NODE" "docker stop ad2526-redis-cluster" \
-  || echo "[warn] ssh fallito — ferma manualmente il container sul nodo $KILL_NODE"
+echo "############################################################"
+echo ">>> KILL del nodo $KILL_NODE ora (t=$(( TEST_TIME / 2 ))s)"
+echo "############################################################"
+# Prova SSH non interattivo (solo se ci sono le chiavi); non si blocca
+# sulla password. Se fallisce, devi fermare il nodo A MANO da VM-2.
+if ssh -o BatchMode=yes -o ConnectTimeout=5 "Karzaladmin@$KILL_NODE" \
+     "docker stop ad2526-redis-cluster" 2>/dev/null; then
+  echo ">>> Nodo $KILL_NODE fermato via SSH."
+else
+  echo ">>> SSH non disponibile. FERMA ORA IL NODO A MANO dal terminale di VM-2:"
+  echo "      docker stop ad2526-redis-cluster"
+  echo ">>> (il campionatore continua a registrare; hai ~$(( TEST_TIME / 2 ))s)"
+fi
 
 wait $MEMTIER_PID || true
 kill $SAMPLER_PID 2>/dev/null || true

@@ -36,6 +36,7 @@ echo ">>> memtier: seed=$SEED_IP t=$THREADS c=$CLIENTS pipeline=$PIPELINE ratio=
 # --distinct-client-seed: ogni client usa chiavi diverse (evita hot key)
 # --json-out-file: output strutturato per il parsing
 docker run --rm --network host \
+  --ulimit nofile=1048576:1048576 \
   -v "$RESULTS_DIR:/out" \
   redislabs/memtier_benchmark:latest \
     --cluster-mode \

@@ -263,6 +263,48 @@ def plot_exp_e():
     _save(fig, "expE_failover_replica.png")
 
 
+def plot_exp_f():
+    f = REDIS_DIR / "expF_downtime" / "probe.csv"
+    if not f.exists():
+        print("  [F] probe.csv assente, skip.")
+        return
+    import csv
+    # raggruppa per secondo: disponibilità = frazione di sonde riuscite
+    by_sec = {}
+    with open(f) as fh:
+        for row in csv.DictReader(fh):
+            try:
+                s = int(row["epoch_sec"]); a = int(row["available"])
+            except (ValueError, KeyError):
+                continue
+            by_sec.setdefault(s, []).append(a)
+    if not by_sec:
+        print("  [F] probe.csv vuoto, skip.")
+        return
+    secs = sorted(by_sec)
+    t0 = secs[0]
+    t = [s - t0 for s in secs]
+    avail = [sum(by_sec[s]) / len(by_sec[s]) * 100 for s in secs]
+
+    # finestra di down: secondi con disponibilità < 50%
+    down = [t[i] for i, a in enumerate(avail) if a < 50]
+    downtime = (max(down) - min(down) + 1) if down else 0
+
+    fig, ax = plt.subplots(figsize=(11, 5))
+    ax.step(t, avail, where="post", color="#2980b9", linewidth=2)
+    ax.fill_between(t, avail, step="post", alpha=0.15, color="#2980b9")
+    if down:
+        ax.axvspan(min(down), max(down) + 1, color="#e74c3c", alpha=0.25,
+                   label=f"Downtime ≈ {downtime}s")
+        ax.legend()
+    ax.set_ylim(-5, 105)
+    ax.set_xlabel("Tempo (s)")
+    ax.set_ylabel("Disponibilità del servizio (%)")
+    ax.set_title("Downtime del failover — disponibilità nel tempo", fontweight="bold")
+    _save(fig, "expF_downtime.png")
+    print(f"     downtime misurato ≈ {downtime}s")
+
+
 if __name__ == "__main__":
     print(f"Carico dati Redis da {REDIS_DIR}")
     print(f"Output in {CHARTS}/")
@@ -271,4 +313,5 @@ if __name__ == "__main__":
     plot_exp_c()
     plot_exp_d()
     plot_exp_e()
+    plot_exp_f()
     print("Fatto.")

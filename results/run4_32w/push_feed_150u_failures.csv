@@ -1,5 +1,0 @@
-Method,Name,Error,Occurrences
-POST,/likes,HTTPError('500 Server Error: Internal Server Error for url: /likes'),69
-GET,/users/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}'),1
-GET,/feed/{user_id},HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}'),1
-POST,/posts,HTTPError('500 Server Error: Internal Server Error for url: /posts'),97

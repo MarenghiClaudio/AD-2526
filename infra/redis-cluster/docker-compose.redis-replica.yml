@@ -1,0 +1,32 @@
+# =================================================================
+# Secondo nodo Redis per VM, sulla porta 6380: forma il "pool repliche"
+# del cluster ad alta disponibilità (3 master su 6379 + 3 repliche su 6380).
+#
+# Avvio (su ogni VM, dopo il master):
+#   REDIS_ANNOUNCE_IP=$(hostname -I | awk '{print $1}') \
+#     docker compose -f infra/redis-cluster/docker-compose.redis-replica.yml up -d
+# =================================================================
+
+services:
+  redis-replica:
+    image: redis:7-alpine
+    container_name: ad2526-redis-cluster-replica
+    network_mode: host
+    command: >
+      redis-server
+        --port 6380
+        --cluster-enabled yes
+        --cluster-config-file /data/nodes-replica.conf
+        --cluster-node-timeout 5000
+        --cluster-announce-ip ${REDIS_ANNOUNCE_IP}
+        --cluster-announce-port 6380
+        --cluster-announce-bus-port 16380
+        --appendonly no
+        --save ""
+        --protected-mode no
+    volumes:
+      - redis_cluster_replica_data:/data
+    restart: unless-stopped
+
+volumes:
+  redis_cluster_replica_data:

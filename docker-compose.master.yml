@@ -1,0 +1,63 @@
+## docker-compose.master.yml — VM master (PostgreSQL primary + data loader)
+##
+## Eseguire dalla root del progetto:
+##   docker compose -f docker-compose.master.yml up -d
+##
+## Setup iniziale (carica dataset):
+##   docker compose -f docker-compose.master.yml --profile setup run --rm data_loader
+
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: ad2526-postgres-master
+    environment:
+      POSTGRES_DB:              ${POSTGRES_DB:-ad}
+      POSTGRES_USER:            ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD:        ${POSTGRES_PASSWORD:-admin}
+      REPLICATION_PASSWORD:     ${REPLICATION_PASSWORD:-replpassword}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+    command: >
+      postgres
+        -c wal_level=replica
+        -c max_wal_senders=5
+        -c max_replication_slots=5
+        -c hot_standby=on
+        -c max_connections=400
+        -c shared_buffers=1GB
+        -c work_mem=16MB
+        -c effective_cache_size=4GB
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-ad}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  data_loader:
+    build:
+      context: .
+      dockerfile: social_network/Dockerfile
+    container_name: ad2526-loader
+    profiles: [setup]
+    environment:
+      DB_HOST:           postgres
+      DB_PORT:           "5432"
+      DB_NAME:           ${POSTGRES_DB:-ad}
+      DB_USER:           ${POSTGRES_USER:-postgres}
+      DB_PASSWORD:       ${POSTGRES_PASSWORD:-admin}
+      DB_SCHEMA:         ad
+      TWITTER_DATA_PATH: /data/twitter_combined.txt
+      RANDOM_SEED:       "42"
+    volumes:
+      - ./datasets:/data:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pg_data:

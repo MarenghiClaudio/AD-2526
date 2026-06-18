@@ -9,9 +9,18 @@ generazione dati e il benchmark con Locust.
 
 ```
 .
-├── docker-compose.yml          # stack completo (PG + Redis + backend + loader)
+├── docker-compose.yml          # stack completo locale (PG + Redis + backend + loader)
+├── docker-compose.master.yml   # stack VM master  (PG + Nginx load balancer)
+├── docker-compose.worker.yml   # stack VM worker  (backend + Redis locale)
 ├── datasets/                   # twitter_combined.txt e altri file di input
-├── infra/postgres/init/        # script SQL di bootstrap PG
+├── infra/
+│   ├── postgres/init/          # script SQL di bootstrap PG
+│   └── azure/
+│       ├── setup-master.sh     # provisioning VM master
+│       ├── setup-worker.sh     # provisioning VM worker
+│       ├── .env.master         # template env per il master
+│       ├── .env.worker.template# template env per ogni worker
+│       └── nginx.conf.template # config load balancer (round-robin)
 ├── social_network/             # pipeline dati (schema, loader, generator)
 │   ├── Dockerfile
 │   ├── requirements.txt
@@ -135,6 +144,96 @@ in `.env`. I CSV sono direttamente confrontabili.
 Hit ratio osservato a regime: **~92%** (consistente con la distribuzione
 Zipf dell'accesso utenti generato dal locustfile).
 
+## Deployment distribuito (Azure)
+
+### Topologia
+
+```
+VM app  (backend + Redis + Locust)
+  ├── FastAPI  :8000   ← unico punto di ingresso per il benchmark
+  └── Redis    :6379   ← caching layer locale
+
+        ↕ scritture (POST/PUT/DELETE)       ↕ letture (GET, cache miss)
+                                              round-robin tra le 3 repliche
+VM master  (16 CPU · 64 GB)          VM replica 1  ─┐
+  └── PostgreSQL :5432  (primary)    VM replica 2  ─┤─ hot standby
+        └── streaming replication →  VM replica 3  ─┘
+```
+
+Il routing letture/scritture è automatico: `deps.py` assegna ad ogni
+request una connessione al master (mutazioni) o a una replica (letture).
+Locust gira sulla stessa VM del backend per minimizzare la latenza di rete
+e misurare il sistema in condizioni controllate.
+
+### Compose files per VM
+
+| File | Usato su |
+|------|----------|
+| `docker-compose.master.yml` | VM master |
+| `docker-compose.replica.yml` | VM replica 1/2/3 |
+| `docker-compose.app.yml` | VM app |
+
+### Setup — ordine obbligatorio
+
+**1 — VM master**
+
+```bash
+# Prima cosa: clona il repo sulla VM (serve git, pre-installato su Ubuntu 22.04)
+git clone --branch cluster-cm git@github.com:MarenghiClaudio/AD-2526.git AD-2526
+cd AD-2526
+
+# Esegui lo script — scarica il dataset da SNAP e avvia PostgreSQL
+sudo -E bash infra/azure/setup-master.sh
+```
+
+Aprire TCP **5432** nel NSG Azure verso le VM replica e app.
+
+**2 — VM replica** (eseguire su ciascuna delle 3)
+
+```bash
+git clone --branch cluster-cm git@github.com:MarenghiClaudio/AD-2526.git AD-2526
+cd AD-2526
+
+export REPLICA_ID=1          # 1, 2 o 3
+export REPLICATION_PASSWORD=replpassword
+sudo -E bash infra/azure/setup-replica.sh
+```
+
+Lo script esegue `pg_basebackup` dal master e avvia il nodo in hot standby.
+Verifica:
+```bash
+docker compose -f docker-compose.replica.yml exec postgres \
+  psql -U postgres -c 'SELECT pg_is_in_recovery();'
+# Atteso: t
+```
+
+**3 — VM app**
+
+```bash
+git clone --branch cluster-cm git@github.com:MarenghiClaudio/AD-2526.git AD-2526
+cd AD-2526
+
+export CACHE_STRATEGY=cache_aside
+sudo -E bash infra/azure/setup-app.sh
+```
+
+### Benchmark per strategia
+
+Ogni run usa una strategia diversa, a parità di infrastruttura:
+
+```bash
+# Sulla VM app — run headless con CSV
+docker compose -f docker-compose.app.yml \
+  --profile benchmark run --rm locust \
+  -f /mnt/locust/locustfile.py \
+  --users 100 --spawn-rate 20 --run-time 5m --headless \
+  --csv=/mnt/results/cache_aside
+
+# Cambiare strategia per il run successivo (riavvio in ~3s)
+sed -i 's/CACHE_STRATEGY=.*/CACHE_STRATEGY=write_through/' .env
+docker compose -f docker-compose.app.yml up -d backend
+```
+
 ## Sviluppo locale (senza Docker)
 
 Se preferisci girare il backend direttamente sull'host:
@@ -156,5 +255,6 @@ Lascia `DB_HOST=localhost` e `REDIS_HOST=localhost` in `backend/.env`.
 
 - ✅ Fase 1: baseline PG nudo, benchmark a 50/100/200 utenti
 - ✅ Fase 2: caching layer con Redis single-node, strategia cache-aside
-- ⬜ Fase 2bis: confronto tra strategie multiple (write-through, push-feed, ...)
-- ⬜ Fase 3: Redis Cluster (3 nodi), test di scalabilità e failover
+- ✅ Fase 2bis: confronto tra strategie multiple (write-through, push-feed, hybrid)
+- ✅ Fase 3: deployment distribuito su Azure (1 master + 3 repliche + 1 app VM, read/write split round-robin)
+- ⬜ Fase 3+: Redis Cluster (sharding), test di failover e scalabilità orizzontale

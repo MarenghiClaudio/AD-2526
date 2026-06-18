@@ -12,7 +12,7 @@ from fastapi import Depends, FastAPI
 
 from . import cache as cache_module
 from .config import Settings, get_settings
-from .db import close_pool, init_pool
+from .db import close_pool, close_read_pools, init_pool, init_read_pools
 from .features.feed.routes import router as feed_router
 from .features.follows.routes import router as follows_router
 from .features.likes.routes import router as likes_router
@@ -34,11 +34,13 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Inizializzazione dei pool al boot, cleanup allo shutdown."""
     _configure_logging()
     init_pool()
+    init_read_pools()
     cache_module.init_pool()
     try:
         yield
     finally:
         cache_module.close_pool()
+        close_read_pools()
         close_pool()
         close_sink()
 

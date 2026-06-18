@@ -1,0 +1,56 @@
+## docker-compose.worker.yml — Servizi di ogni VM worker
+##
+## Ogni worker esegue il backend FastAPI + Redis locale.
+## PostgreSQL risiede sulla VM master: impostare MASTER_IP in .env
+##
+## Eseguire dalla root del progetto:
+##   docker compose -f docker-compose.worker.yml up -d --build
+##
+## Cambiare strategia (senza rebuild):
+##   Modifica CACHE_STRATEGY in .env, poi:
+##   docker compose -f docker-compose.worker.yml up -d backend
+
+services:
+
+  redis:
+    image: redis:7-alpine
+    container_name: ad2526-redis
+    # Redis non esposto all'esterno: accessibile solo dal backend locale
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--save", "60", "1", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: ad2526-backend
+    env_file:
+      - .env
+    environment:
+      # Sovrascrive il .env: punta al PostgreSQL sulla VM master
+      DB_HOST:    ${MASTER_IP:?Imposta MASTER_IP in .env con l'IP privato della VM master}
+      DB_PORT:    "5432"
+      # Redis locale al container
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+    ports:
+      - "8000:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: >
+      uvicorn app.main:app
+        --host 0.0.0.0
+        --port 8000
+        --workers ${UVICORN_WORKERS:-2}
+    restart: unless-stopped
+
+volumes:
+  redis_data:

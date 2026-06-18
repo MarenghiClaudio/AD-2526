@@ -1,0 +1,72 @@
+## docker-compose.app.yml — VM applicativa (backend FastAPI + Redis + Locust)
+##
+## Eseguire dalla root del progetto:
+##   docker compose -f docker-compose.app.yml up -d --build
+##
+## Avviare il benchmark (Locust headless):
+##   docker compose -f docker-compose.app.yml --profile benchmark up locust
+##
+## Variabili richieste in .env:
+##   MASTER_IP      → IP privato della VM master (PostgreSQL primario)
+##   DB_HOSTS_READ  → IP privati delle repliche, comma-separated
+##                    es: 10.0.0.5,10.0.0.6,10.0.0.7
+
+services:
+
+  redis:
+    image: redis:7-alpine
+    container_name: ad2526-redis
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--save", "60", "1", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: ad2526-backend
+    env_file:
+      - .env
+    environment:
+      DB_HOST:        ${MASTER_IP:?Imposta MASTER_IP in .env}
+      DB_HOSTS_READ:  ${DB_HOSTS_READ:-}
+      REDIS_HOST:     redis
+      REDIS_PORT:     "6379"
+    ports:
+      - "8000:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: >
+      uvicorn app.main:app
+        --host 0.0.0.0
+        --port 8000
+        --workers ${UVICORN_WORKERS:-4}
+    restart: unless-stopped
+
+  locust:
+    image: locustio/locust:2.32.3
+    container_name: ad2526-locust
+    profiles: [benchmark]
+    ports:
+      - "8089:8089"
+    volumes:
+      - ./backend:/mnt/locust:ro
+      - ./results:/mnt/results
+    environment:
+      LOCUST_HOST: http://backend:8000
+      USERS_CSV: /mnt/locust/users.csv
+    command: >
+      -f /mnt/locust/locustfile.py
+      --host http://backend:8000
+    depends_on:
+      - backend
+
+volumes:
+  redis_data:

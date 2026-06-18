@@ -1,0 +1,1595 @@
+nohup: ignoring input
+
+==============================
+ Strategia: no_cache
+==============================
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+  → Skip 10 utenti (già presente)
+  → 25 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-ff9331307d0b Creating 
+ Container ad-2526-locust-run-ff9331307d0b Created 
+[2026-06-15 23:46:08,331] ddd887793404/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-15 23:46:08,332] ddd887793404/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-15 23:46:08,333] ddd887793404/INFO/locust.runners: Ramping to 25 users at a rate of 20.00 per second
+[2026-06-15 23:46:09,334] ddd887793404/INFO/locust.runners: All users spawned: {"BrowsingUser": 25} (25 total users)
+[2026-06-15 23:51:08,087] ddd887793404/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-15 23:51:08,115] ddd887793404/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                14629 14387(98.35%) |      3       1     190      2 |   48.80       48.00
+GET      /feed/{user_id}?with_fof=true                                                   7248 7126(98.32%) |      5       1     194      3 |   24.18       23.77
+POST     /likes                                                                           722     0(0.00%) |      3       1     107      3 |    2.41        0.00
+POST     /posts                                                                          1138 1117(98.15%) |      3       1      42      3 |    3.80        3.73
+GET      /timeline/{user_id}                                                             9223 9065(98.29%) |      3       1     143      2 |   30.77       30.24
+GET      /users/{user_id}                                                                3651 3597(98.52%) |      3       2     171      3 |   12.18       12.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                     36611 35292(96.40%) |      3       1     194      3 |  122.14      117.74
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                         2      3      3      3      3     10     16     22     54    150    190  14629
+GET      /feed/{user_id}?with_fof=true                                                           3      3      3      3      3     10     35    140    170    190    190   7248
+POST     /likes                                                                                  3      3      3      3      4     10     16     30    110    110    110    722
+POST     /posts                                                                                  3      3      3      3      3      4     12     19     36     42     42   1138
+GET      /timeline/{user_id}                                                                     2      3      3      3      3      6     13     20     55    140    140   9223
+GET      /users/{user_id}                                                                        3      3      3      3      4      6     16     22     63    170    170   3651
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                              3      3      3      3      3      8     16     26    160    180    190  36611
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+14387              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+7126               GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+9065               GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+3597               GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+1117               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 50 utenti (già presente)
+  → 75 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-1b011ad50bac Creating 
+ Container ad-2526-locust-run-1b011ad50bac Created 
+[2026-06-15 23:51:09,882] e83b880cdcbd/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-15 23:51:09,883] e83b880cdcbd/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-15 23:51:09,883] e83b880cdcbd/INFO/locust.runners: Ramping to 75 users at a rate of 20.00 per second
+[2026-06-15 23:51:12,886] e83b880cdcbd/INFO/locust.runners: All users spawned: {"BrowsingUser": 75} (75 total users)
+[2026-06-15 23:56:09,634] e83b880cdcbd/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-15 23:56:09,672] e83b880cdcbd/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                41357 40661(98.32%) |     15       1     951      3 |  137.96      135.63
+GET      /feed/{user_id}?with_fof=true                                                  20630 20311(98.45%) |     17       1     922      3 |   68.82       67.75
+POST     /likes                                                                          2087     0(0.00%) |     15       1     282      3 |    6.96        0.00
+POST     /posts                                                                          3032 2983(98.38%) |     15       1     933      3 |   10.11        9.95
+GET      /timeline/{user_id}                                                            25767 25361(98.42%) |     15       1     835      3 |   85.95       84.60
+GET      /users/{user_id}                                                               10551 10359(98.18%) |     16       2     923      4 |   35.20       34.55
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    103424 99675(96.38%) |     15       1     951      3 |  344.99      332.49
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                         3      4     11     17     44     79    120    160    250    870    950  41357
+GET      /feed/{user_id}?with_fof=true                                                           3      4     11     18     50     96    150    190    310    830    920  20630
+POST     /likes                                                                                  3      5     12     18     44     74    130    150    270    280    280   2087
+POST     /posts                                                                                  3      4     11     16     42     79    130    170    290    930    930   3032
+GET      /timeline/{user_id}                                                                     3      4     11     17     44     80    130    160    240    830    840  25767
+GET      /users/{user_id}                                                                        4      6     12     18     45     80    130    160    280    880    920  10551
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                              3      4     11     17     45     82    130    170    270    850    950 103424
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+2982               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+20309              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+40657              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+10359              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+25360              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+1                  POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+4                  GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+2                  GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+1                  GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 100 utenti (già presente)
+  → 150 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-1d0feedd6975 Creating 
+ Container ad-2526-locust-run-1d0feedd6975 Created 
+[2026-06-15 23:56:11,670] ab21c4266826/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-15 23:56:11,671] ab21c4266826/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-15 23:56:11,672] ab21c4266826/INFO/locust.runners: Ramping to 150 users at a rate of 20.00 per second
+[2026-06-15 23:56:18,678] ab21c4266826/INFO/locust.runners: All users spawned: {"BrowsingUser": 150} (150 total users)
+[2026-06-16 00:01:11,418] ab21c4266826/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 00:01:11,463] ab21c4266826/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                55346 54463(98.40%) |    115       1    1474     47 |  184.62      181.67
+GET      /feed/{user_id}?with_fof=true                                                  28112 27666(98.41%) |    120       1    1461     51 |   93.77       92.29
+POST     /likes                                                                          2688    32(1.19%) |    117       2    1151     48 |    8.97        0.11
+POST     /posts                                                                          4305 4244(98.58%) |    117       2    1327     45 |   14.36       14.16
+GET      /timeline/{user_id}                                                            35152 34600(98.43%) |    117       1    1483     48 |  117.26      115.42
+GET      /users/{user_id}                                                               14038 13816(98.42%) |    120       2    1474     54 |   46.83       46.09
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    139641 134821(96.55%) |    117       1    1483     49 |  465.81      449.73
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                        47    140    200    240    340    390    450    480    820   1400   1500  55346
+GET      /feed/{user_id}?with_fof=true                                                          51    140    210    250    340    400    460    500    900   1400   1500  28112
+POST     /likes                                                                                 48    140    200    250    340    400    460    490    760   1200   1200   2688
+POST     /posts                                                                                 45    140    210    250    340    400    450    490    900   1300   1300   4305
+GET      /timeline/{user_id}                                                                    48    140    210    250    340    400    450    490    870   1500   1500  35152
+GET      /users/{user_id}                                                                       54    140    210    250    340    400    460    490    780   1400   1500  14038
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                             49    140    210    250    340    400    450    490    840   1400   1500 139641
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+53585              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+34051              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+27236              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+13594              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+4176               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+878                GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+549                GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+430                GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+222                GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+68                 POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+32                 POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 200 utenti (già presente)
+  → 300 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-bc8d5883daaa Creating 
+ Container ad-2526-locust-run-bc8d5883daaa Created 
+[2026-06-16 00:01:13,663] 417219ad7ec5/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 00:01:13,664] 417219ad7ec5/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 00:01:13,665] 417219ad7ec5/INFO/locust.runners: Ramping to 300 users at a rate of 20.00 per second
+[2026-06-16 00:01:27,687] 417219ad7ec5/INFO/locust.runners: All users spawned: {"BrowsingUser": 300} (300 total users)
+[2026-06-16 00:06:13,398] 417219ad7ec5/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 00:06:13,476] 417219ad7ec5/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                76089 74954(98.51%) |    257       1    3129     83 |  253.80      250.01
+GET      /feed/{user_id}?with_fof=true                                                  38119 37522(98.43%) |    272       2    3395     91 |  127.15      125.16
+POST     /likes                                                                          3826   311(8.13%) |    257       2    2393     88 |   12.76        1.04
+POST     /posts                                                                          5529 5440(98.39%) |    254       2    2477     78 |   18.44       18.15
+GET      /timeline/{user_id}                                                            47363 46649(98.49%) |    257       2    2854     83 |  157.98      155.60
+GET      /users/{user_id}                                                               19073 18823(98.69%) |    266       2    3131    100 |   63.62       62.79
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    189999 183699(96.68%) |    261       1    3395     86 |  633.76      612.74
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                        83    340    440    490    690    950   1200   1400   2000   2400   3100  76089
+GET      /feed/{user_id}?with_fof=true                                                          91    360    450    510    720   1000   1300   1500   2400   2900   3400  38119
+POST     /likes                                                                                 88    340    440    490    680    910   1200   1400   2200   2400   2400   3826
+POST     /posts                                                                                 78    340    440    490    680    930   1200   1400   1900   2500   2500   5529
+GET      /timeline/{user_id}                                                                    83    340    440    490    680    950   1200   1400   2000   2700   2900  47363
+GET      /users/{user_id}                                                                      100    350    450    500    700    960   1300   1500   2100   3100   3100  19073
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                             86    340    440    500    690    960   1300   1400   2100   2700   3400 189999
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+34493              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+68865              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+42970              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+4964               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+17315              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+6089               GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+3029               GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+3679               GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+1508               GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+476                POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+311                POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 400 utenti (già presente)
+  → 500 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-ac45cc4da34c Creating 
+ Container ad-2526-locust-run-ac45cc4da34c Created 
+[2026-06-16 00:06:15,967] b6d4002b7d75/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 00:06:15,968] b6d4002b7d75/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 00:06:15,969] b6d4002b7d75/INFO/locust.runners: Ramping to 500 users at a rate of 20.00 per second
+[2026-06-16 00:06:40,019] b6d4002b7d75/INFO/locust.runners: All users spawned: {"BrowsingUser": 500} (500 total users)
+[2026-06-16 00:11:15,658] b6d4002b7d75/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 00:11:15,760] b6d4002b7d75/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                68760 67759(98.54%) |    618       2    6293    270 |  229.37      226.03
+GET      /feed/{user_id}?with_fof=true                                                  34788 34324(98.67%) |    635       2    6869    310 |  116.04      114.50
+POST     /likes                                                                          3550   341(9.61%) |    620       2    5737    310 |   11.84        1.14
+POST     /posts                                                                          5083 5011(98.58%) |    618       2    5713    280 |   16.96       16.72
+GET      /timeline/{user_id}                                                            43498 42851(98.51%) |    621       2    6212    280 |  145.10      142.94
+GET      /users/{user_id}                                                               17632 17388(98.62%) |    652       2    6551    330 |   58.82       58.00
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    173311 167674(96.75%) |    626       2    6869    290 |  578.13      559.32
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                       270    710    970   1200   1700   2300   3000   3500   4400   5700   6300  68760
+GET      /feed/{user_id}?with_fof=true                                                         310    750   1000   1200   1700   2300   3100   3500   4500   5600   6900  34788
+POST     /likes                                                                                310    730    970   1100   1700   2200   3100   3600   4400   5700   5700   3550
+POST     /posts                                                                                280    710    970   1200   1700   2300   3000   3400   4400   5700   5700   5083
+GET      /timeline/{user_id}                                                                   280    720    970   1200   1700   2300   3000   3500   4400   5500   6200  43498
+GET      /users/{user_id}                                                                      330    730   1000   1200   1800   2300   3100   3700   5500   6400   6600  17632
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                            290    720    980   1200   1700   2300   3000   3500   4600   5700   6900 173311
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+31211              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+61611              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+38910              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+4546               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+15826              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+6148               GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+3113               GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+1562               GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+3941               GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+465                POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+341                POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 700 utenti (già presente)
+
+==============================
+ Strategia: cache_aside
+==============================
+ Container ad2526-redis Running 
+ Container ad2526-backend Recreate 
+ Container ad2526-backend Recreated 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad2526-backend Starting 
+ Container ad2526-backend Started 
+  → 10 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-a60d451d448e Creating 
+ Container ad-2526-locust-run-a60d451d448e Created 
+[2026-06-16 00:11:26,228] 5b235c3df6ab/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 00:11:26,229] 5b235c3df6ab/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 00:11:26,229] 5b235c3df6ab/INFO/locust.runners: Ramping to 10 users at a rate of 20.00 per second
+[2026-06-16 00:11:26,230] 5b235c3df6ab/INFO/locust.runners: All users spawned: {"BrowsingUser": 10} (10 total users)
+[2026-06-16 00:16:25,919] 5b235c3df6ab/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 00:16:25,946] 5b235c3df6ab/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                 4452 4377(98.32%) |     69       1    1253      3 |   14.86       14.61
+GET      /feed/{user_id}?with_fof=true                                                   2213 2181(98.55%) |     75       1    1189      3 |    7.38        7.28
+POST     /likes                                                                           207     5(2.42%) |     69       2    1234      3 |    0.69        0.02
+POST     /posts                                                                           366  362(98.91%) |     67       1     999      3 |    1.22        1.21
+GET      /timeline/{user_id}                                                             2745 2697(98.25%) |     67       1    1888      3 |    9.16        9.00
+GET      /users/{user_id}                                                                1125 1103(98.04%) |     66       1    1228      3 |    3.75        3.68
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                     11108 10725(96.55%) |     70       1    1888      3 |   37.07       35.79
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                         3      3      3      3    190    680    810    880   1100   1300   1300   4452
+GET      /feed/{user_id}?with_fof=true                                                           3      3      3      3    320    720    830    890   1200   1200   1200   2213
+POST     /likes                                                                                  3      3      3      4     42    680   1000   1100   1200   1200   1200    207
+POST     /posts                                                                                  3      3      3      4    260    640    800    940   1000   1000   1000    366
+GET      /timeline/{user_id}                                                                     3      3      3      3     75    670    840    920   1100   1900   1900   2745
+GET      /users/{user_id}                                                                        3      3      4      4     81    680    830    880   1100   1200   1200   1125
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                              3      3      3      4    180    690    830    890   1100   1300   1900  11108
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+1088               GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+2659               GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+4304               GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+354                POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+73                 GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+38                 GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+2135               GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+46                 GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+8                  POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+15                 GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+5                  POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 25 utenti (già presente)
+  → 50 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-a671fc6ea7be Creating 
+ Container ad-2526-locust-run-a671fc6ea7be Created 
+[2026-06-16 00:16:27,617] fdbf0d8ec7d0/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 00:16:27,618] fdbf0d8ec7d0/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 00:16:27,619] fdbf0d8ec7d0/INFO/locust.runners: Ramping to 50 users at a rate of 20.00 per second
+[2026-06-16 00:16:29,621] fdbf0d8ec7d0/INFO/locust.runners: All users spawned: {"BrowsingUser": 50} (50 total users)
+[2026-06-16 00:21:27,373] fdbf0d8ec7d0/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 00:21:27,403] fdbf0d8ec7d0/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                28654 28178(98.34%) |      9       1     236      3 |   95.58       93.99
+GET      /feed/{user_id}?with_fof=true                                                  14128 13884(98.27%) |     10       1     219      3 |   47.13       46.31
+POST     /likes                                                                          1386     0(0.00%) |     10       1     202      3 |    4.62        0.00
+POST     /posts                                                                          2103 2064(98.15%) |     11       1     194      3 |    7.02        6.89
+GET      /timeline/{user_id}                                                            17770 17467(98.29%) |      9       1     218      3 |   59.28       58.27
+GET      /users/{user_id}                                                                7037 6919(98.32%) |     10       1     228      3 |   23.47       23.08
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                     71078 68512(96.39%) |     10       1     236      3 |  237.10      228.54
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                         3      3      4      5     24     54     92    120    190    210    240  28654
+GET      /feed/{user_id}?with_fof=true                                                           3      3      4      5     25     58     97    120    190    220    220  14128
+POST     /likes                                                                                  3      3      4      6     26     64     96    120    160    200    200   1386
+POST     /posts                                                                                  3      3      4      8     29     63    100    130    190    190    190   2103
+GET      /timeline/{user_id}                                                                     3      3      4      5     24     55     93    120    190    220    220  17770
+GET      /users/{user_id}                                                                        3      4      5      8     27     57     93    120    190    230    230   7037
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                              3      3      4      5     24     56     94    120    190    220    240  71078
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+28178              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+13884              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+6919               GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+17467              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+2064               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 75 utenti (già presente)
+  → 100 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-8fd0782a70b0 Creating 
+ Container ad-2526-locust-run-8fd0782a70b0 Created 
+[2026-06-16 00:21:29,248] 2de9ee1b9d5e/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 00:21:29,249] 2de9ee1b9d5e/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 00:21:29,249] 2de9ee1b9d5e/INFO/locust.runners: Ramping to 100 users at a rate of 20.00 per second
+[2026-06-16 00:21:33,255] 2de9ee1b9d5e/INFO/locust.runners: All users spawned: {"BrowsingUser": 100} (100 total users)
+[2026-06-16 00:26:29,004] 2de9ee1b9d5e/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 00:26:29,040] 2de9ee1b9d5e/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                51165 50326(98.36%) |     32       1    1921      4 |  170.67      167.87
+GET      /feed/{user_id}?with_fof=true                                                  25428 24990(98.28%) |     32       1    1969      4 |   84.82       83.36
+POST     /likes                                                                          2612     2(0.08%) |     33       1    1838      4 |    8.71        0.01
+POST     /posts                                                                          3827 3768(98.46%) |     34       1    1656      4 |   12.77       12.57
+GET      /timeline/{user_id}                                                            31833 31263(98.21%) |     32       1    1904      4 |  106.19      104.28
+GET      /users/{user_id}                                                               12850 12630(98.29%) |     34       1    1940      6 |   42.86       42.13
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    127715 122979(96.29%) |     32       1    1969      4 |  426.02      410.22
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                         4     15     35     54    110    160    200    230    400   1500   1900  51165
+GET      /feed/{user_id}?with_fof=true                                                           4     14     35     52    110    150    200    230    710   1800   2000  25428
+POST     /likes                                                                                  4     16     36     54    110    170    220    250    490   1800   1800   2612
+POST     /posts                                                                                  4     15     35     54    110    160    210    240   1200   1700   1700   3827
+GET      /timeline/{user_id}                                                                     4     15     35     53    110    160    210    230    750   1900   1900  31833
+GET      /users/{user_id}                                                                        6     19     38     56    110    160    210    230    920   1700   1900  12850
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                              4     15     35     54    110    160    210    230    690   1800   2000 127715
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+24959              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+31231              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+50281              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+12612              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+3766               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+45                 GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+32                 GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+31                 GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+2                  POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+18                 GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+2                  POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 150 utenti (già presente)
+  → 200 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-ffe8ef597c17 Creating 
+ Container ad-2526-locust-run-ffe8ef597c17 Created 
+[2026-06-16 00:26:31,108] 495cde7bd1ff/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 00:26:31,108] 495cde7bd1ff/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 00:26:31,109] 495cde7bd1ff/INFO/locust.runners: Ramping to 200 users at a rate of 20.00 per second
+[2026-06-16 00:26:40,120] 495cde7bd1ff/INFO/locust.runners: All users spawned: {"BrowsingUser": 200} (200 total users)
+[2026-06-16 00:31:30,855] 495cde7bd1ff/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 00:31:30,911] 495cde7bd1ff/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                65709 64684(98.44%) |    158       1     874    110 |  219.19      215.77
+GET      /feed/{user_id}?with_fof=true                                                  32817 32315(98.47%) |    159       1     790    110 |  109.47      107.79
+POST     /likes                                                                          3260   149(4.57%) |    158       2     681    100 |   10.87        0.50
+POST     /posts                                                                          5002 4929(98.54%) |    157       2     899    110 |   16.69       16.44
+GET      /timeline/{user_id}                                                            41063 40436(98.47%) |    158       1     865    110 |  136.97      134.88
+GET      /users/{user_id}                                                               16374 16131(98.52%) |    159       2     803    110 |   54.62       53.81
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    164225 158644(96.60%) |    158       1     899    110 |  547.81      529.19
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                       110    230    290    320    390    440    490    520    630    750    870  65709
+GET      /feed/{user_id}?with_fof=true                                                         110    240    300    330    390    440    490    520    630    740    790  32817
+POST     /likes                                                                                100    230    300    330    400    440    490    520    600    680    680   3260
+POST     /posts                                                                                110    230    290    320    390    440    490    530    640    900    900   5002
+GET      /timeline/{user_id}                                                                   110    230    290    320    390    440    490    520    640    770    870  41063
+GET      /users/{user_id}                                                                      110    230    290    320    390    440    490    520    630    770    800  16374
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                            110    230    290    320    390    440    490    520    630    760    900 164225
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+30938              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+38753              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+61970              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+15433              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+4744               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+1377               GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+2714               GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+1683               GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+698                GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+185                POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+149                POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 300 utenti (già presente)
+  → 400 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-58c9f0ca3922 Creating 
+ Container ad-2526-locust-run-58c9f0ca3922 Created 
+[2026-06-16 00:31:33,398] 9bd5ddff7e7a/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 00:31:33,398] 9bd5ddff7e7a/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 00:31:33,399] 9bd5ddff7e7a/INFO/locust.runners: Ramping to 400 users at a rate of 20.00 per second
+[2026-06-16 00:31:52,432] 9bd5ddff7e7a/INFO/locust.runners: All users spawned: {"BrowsingUser": 400} (400 total users)
+[2026-06-16 00:33:33,429] 9bd5ddff7e7a/WARNING/root: CPU usage above 90%! This may constrain your throughput and may even give inconsistent response time measurements! See https://docs.locust.io/en/stable/running-distributed.html for how to distribute the load over multiple CPU cores or machines
+[2026-06-16 00:36:33,107] 9bd5ddff7e7a/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 00:36:33,198] 9bd5ddff7e7a/WARNING/locust.runners: CPU usage was too high at some point during the test! See https://docs.locust.io/en/stable/running-distributed.html for how to distribute the load over multiple CPU cores or machines
+[2026-06-16 00:36:33,198] 9bd5ddff7e7a/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                94793 93370(98.50%) |    287       2    2943     83 |  316.20      311.45
+GET      /feed/{user_id}?with_fof=true                                                  47460 46724(98.45%) |    285       2    2723     78 |  158.31      155.86
+POST     /likes                                                                          4786   304(6.35%) |    292       2    2610     76 |   15.96        1.01
+POST     /posts                                                                          7046 6936(98.44%) |    284       2    2162     80 |   23.50       23.14
+GET      /timeline/{user_id}                                                            59229 58299(98.43%) |    286       2    3100     79 |  197.57      194.47
+GET      /users/{user_id}                                                               23567 23211(98.49%) |    298       2    2879    100 |   78.61       77.42
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    236881 228844(96.61%) |    288       2    3100     83 |  790.16      763.35
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                        83    350    490    550    850   1100   1300   1500   2000   2500   2900  94793
+GET      /feed/{user_id}?with_fof=true                                                          78    350    480    550    840   1100   1300   1500   2100   2600   2700  47460
+POST     /likes                                                                                 76    360    490    570    870   1100   1300   1500   2100   2600   2600   4786
+POST     /posts                                                                                 80    350    480    550    840   1100   1300   1400   1900   2200   2200   7046
+GET      /timeline/{user_id}                                                                    79    350    490    550    840   1100   1300   1500   2100   2500   3100  59229
+GET      /users/{user_id}                                                                      100    370    490    560    870   1100   1300   1500   2200   2800   2900  23567
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                             83    350    490    550    850   1100   1300   1500   2100   2500   3100 236881
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+87557              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+6460               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+54818              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+21853              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+43863              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+2861               GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+1358               GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+3481               GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+5813               GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+476                POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+304                POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 500 utenti (già presente)
+  → 700 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-4c64519993cb Creating 
+ Container ad-2526-locust-run-4c64519993cb Created 
+[2026-06-16 00:36:35,879] 48308edad5a7/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 00:36:35,880] 48308edad5a7/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 00:36:35,881] 48308edad5a7/INFO/locust.runners: Ramping to 700 users at a rate of 20.00 per second
+[2026-06-16 00:37:09,968] 48308edad5a7/INFO/locust.runners: All users spawned: {"BrowsingUser": 700} (700 total users)
+[2026-06-16 00:38:35,904] 48308edad5a7/WARNING/root: CPU usage above 90%! This may constrain your throughput and may even give inconsistent response time measurements! See https://docs.locust.io/en/stable/running-distributed.html for how to distribute the load over multiple CPU cores or machines
+[2026-06-16 00:41:35,571] 48308edad5a7/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 00:41:35,756] 48308edad5a7/WARNING/locust.runners: CPU usage was too high at some point during the test! See https://docs.locust.io/en/stable/running-distributed.html for how to distribute the load over multiple CPU cores or machines
+[2026-06-16 00:41:35,756] 48308edad5a7/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                               112710 111050(98.53%) |    494       0    4766    380 |  375.87      370.34
+GET      /feed/{user_id}?with_fof=true                                                  56681 55832(98.50%) |    494       0    4960    390 |  189.02      186.19
+POST     /likes                                                                          5663   425(7.50%) |    492       2    3449    390 |   18.89        1.42
+POST     /posts                                                                          8451 8327(98.53%) |    492       2    4261    380 |   28.18       27.77
+GET      /timeline/{user_id}                                                            70648 69596(98.51%) |    497       0    4854    390 |  235.60      232.09
+GET      /users/{user_id}                                                               28182 27784(98.59%) |    517       0    4869    420 |   93.98       92.66
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    282335 273014(96.70%) |    497       0    4960    390 |  941.55      910.47
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                       380    680    800    860   1000   1400   2100   2600   3300   4300   4800 112710
+GET      /feed/{user_id}?with_fof=true                                                         390    680    790    860   1000   1400   2200   2600   3400   4400   5000  56681
+POST     /likes                                                                                390    680    800    870   1000   1400   2100   2600   3200   3400   3400   5663
+POST     /posts                                                                                380    680    800    860   1000   1400   2100   2600   3400   4300   4300   8451
+GET      /timeline/{user_id}                                                                   390    680    800    860   1100   1500   2200   2600   3400   4000   4900  70648
+GET      /users/{user_id}                                                                      420    690    810    870   1100   1500   2100   2600   4200   4800   4900  28182
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                            390    680    800    860   1000   1400   2100   2600   3400   4400   5000 282335
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+51521              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+25667              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+102549             GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+64167              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+7699               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+1654               GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+4273               GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+6602               GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+3307               GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+488                POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+328                POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+3                  GET /users/{user_id}: RemoteDisconnected('Remote end closed connection without response')           
+3                  POST /likes: RemoteDisconnected('Remote end closed connection without response')                    
+24                 GET /feed/{user_id}: RemoteDisconnected('Remote end closed connection without response')            
+13                 GET /timeline/{user_id}: RemoteDisconnected('Remote end closed connection without response')        
+7                  GET /feed/{user_id}?with_fof=true: RemoteDisconnected('Remote end closed connection without response')
+3                  POST /posts: RemoteDisconnected('Remote end closed connection without response')                    
+1521               GET /feed/{user_id}: ConnectionRefusedError(111, 'Connection refused')                              
+773                GET /feed/{user_id}?with_fof=true: ConnectionRefusedError(111, 'Connection refused')                
+911                GET /timeline/{user_id}: ConnectionRefusedError(111, 'Connection refused')                          
+106                POST /posts: ConnectionRefusedError(111, 'Connection refused')                                      
+386                GET /users/{user_id}: ConnectionRefusedError(111, 'Connection refused')                             
+73                 GET /feed/{user_id}: ConnectionResetError(104, 'Connection reset by peer')                          
+41                 GET /feed/{user_id}?with_fof=true: ConnectionResetError(104, 'Connection reset by peer')            
+9                  POST /posts: ConnectionResetError(104, 'Connection reset by peer')                                  
+40                 GET /timeline/{user_id}: ConnectionResetError(104, 'Connection reset by peer')                      
+4                  POST /likes: ConnectionResetError(104, 'Connection reset by peer')                                  
+20                 GET /users/{user_id}: ConnectionResetError(104, 'Connection reset by peer')                         
+77                 POST /likes: ConnectionRefusedError(111, 'Connection refused')                                      
+192                GET /timeline/{user_id}: gaierror(-3, 'Temporary failure in name resolution')                       
+281                GET /feed/{user_id}: gaierror(-3, 'Temporary failure in name resolution')                           
+183                GET /feed/{user_id}?with_fof=true: gaierror(-3, 'Temporary failure in name resolution')             
+22                 POST /posts: gaierror(-3, 'Temporary failure in name resolution')                                   
+54                 GET /users/{user_id}: gaierror(-3, 'Temporary failure in name resolution')                          
+13                 POST /likes: gaierror(-3, 'Temporary failure in name resolution')                                   
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+==============================
+ Strategia: write_through
+==============================
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+  → Skip 10 utenti (già presente)
+  → 25 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-a6f4234d95c4 Creating 
+ Container ad-2526-locust-run-a6f4234d95c4 Created 
+[2026-06-16 00:41:43,614] aa3ae778f3de/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 00:41:43,614] aa3ae778f3de/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 00:41:43,615] aa3ae778f3de/INFO/locust.runners: Ramping to 25 users at a rate of 20.00 per second
+[2026-06-16 00:41:44,617] aa3ae778f3de/INFO/locust.runners: All users spawned: {"BrowsingUser": 25} (25 total users)
+[2026-06-16 00:46:43,365] aa3ae778f3de/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 00:46:43,393] aa3ae778f3de/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                14770 14504(98.20%) |      2       1      78      3 |   49.28       48.39
+GET      /feed/{user_id}?with_fof=true                                                   7331 7235(98.69%) |      3       1     164      3 |   24.46       24.14
+POST     /likes                                                                           771     0(0.00%) |      3       2      77      3 |    2.57        0.00
+POST     /posts                                                                          1064 1046(98.31%) |      3       1      82      3 |    3.55        3.49
+GET      /timeline/{user_id}                                                             9204 9054(98.37%) |      2       1      69      3 |   30.71       30.21
+GET      /users/{user_id}                                                                3724 3676(98.71%) |      3       1      44      3 |   12.42       12.26
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                     36864 35515(96.34%) |      2       1     164      3 |  122.98      118.48
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                         3      3      3      3      3      4      5     13     33     77     78  14770
+GET      /feed/{user_id}?with_fof=true                                                           3      3      3      3      3      4      5     13    120    160    160   7331
+POST     /likes                                                                                  3      3      3      3      3      4      5     13     78     78     78    771
+POST     /posts                                                                                  3      3      3      3      3      4      6     11     33     82     82   1064
+GET      /timeline/{user_id}                                                                     3      3      3      3      3      4      5     11     34     70     70   9204
+GET      /users/{user_id}                                                                        3      3      3      3      4      4      6     13     41     45     45   3724
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                              3      3      3      3      3      4      5     12     41    150    160  36864
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+14504              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+9054               GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+7235               GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+3676               GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+1046               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 50 utenti (già presente)
+  → 75 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-cc2286c7a649 Creating 
+ Container ad-2526-locust-run-cc2286c7a649 Created 
+[2026-06-16 00:46:45,146] d34639b313ed/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 00:46:45,147] d34639b313ed/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 00:46:45,148] d34639b313ed/INFO/locust.runners: Ramping to 75 users at a rate of 20.00 per second
+[2026-06-16 00:46:48,152] d34639b313ed/INFO/locust.runners: All users spawned: {"BrowsingUser": 75} (75 total users)
+[2026-06-16 00:51:44,889] d34639b313ed/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 00:51:44,925] d34639b313ed/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                39786 39140(98.38%) |     22       1    1755      3 |  132.72      130.57
+GET      /feed/{user_id}?with_fof=true                                                  20052 19714(98.31%) |     23       1    1734      3 |   66.89       65.76
+POST     /likes                                                                          1959     0(0.00%) |     22       1    1357      3 |    6.53        0.00
+POST     /posts                                                                          3025 2983(98.61%) |     22       1     846      4 |   10.09        9.95
+GET      /timeline/{user_id}                                                            25091 24684(98.38%) |     22       1    1729      3 |   83.70       82.34
+GET      /users/{user_id}                                                               10058 9909(98.52%) |     24       1    1632      5 |   33.55       33.05
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                     99971 96430(96.46%) |     23       1    1755      3 |  333.49      321.68
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                         3     10     20     32     74    110    160    180    270   1700   1800  39786
+GET      /feed/{user_id}?with_fof=true                                                           3     10     21     32     75    120    160    190    290   1700   1700  20052
+POST     /likes                                                                                  3      8     19     32     69    110    170    190   1100   1400   1400   1959
+POST     /posts                                                                                  4     10     20     32     75    110    160    190    310    850    850   3025
+GET      /timeline/{user_id}                                                                     3     10     21     32     74    110    160    190    290   1700   1700  25091
+GET      /users/{user_id}                                                                        5     12     23     34     77    120    170    200    310   1600   1600  10058
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                              3     10     21     32     74    110    160    190    290   1700   1800  99971
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+39121              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+24666              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+9896               GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+19705              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+2980               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+18                 GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+19                 GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+13                 GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+3                  POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+9                  GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 100 utenti (già presente)
+  → 150 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-6c55a0b582f4 Creating 
+ Container ad-2526-locust-run-6c55a0b582f4 Created 
+[2026-06-16 00:51:46,843] 047115c1103a/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 00:51:46,844] 047115c1103a/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 00:51:46,844] 047115c1103a/INFO/locust.runners: Ramping to 150 users at a rate of 20.00 per second
+[2026-06-16 00:51:53,851] 047115c1103a/INFO/locust.runners: All users spawned: {"BrowsingUser": 150} (150 total users)
+[2026-06-16 00:56:46,595] 047115c1103a/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 00:56:46,646] 047115c1103a/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                59653 58738(98.47%) |     98       1    1427     44 |  198.98      195.93
+GET      /feed/{user_id}?with_fof=true                                                  29679 29196(98.37%) |     97       1    1415     43 |   99.00       97.39
+POST     /likes                                                                          3024    44(1.46%) |     95       2    1243     42 |   10.09        0.15
+POST     /posts                                                                          4454 4392(98.61%) |     96       1    1146     43 |   14.86       14.65
+GET      /timeline/{user_id}                                                            37345 36745(98.39%) |     96       1    1423     42 |  124.57      122.57
+GET      /users/{user_id}                                                               14862 14625(98.41%) |    101       1    1275     50 |   49.57       48.78
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    149017 143740(96.46%) |     97       1    1427     44 |  497.07      479.47
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                        44    120    170    200    280    320    370    390    630   1400   1400  59653
+GET      /feed/{user_id}?with_fof=true                                                          43    120    170    200    270    320    360    390    590   1400   1400  29679
+POST     /likes                                                                                 42    110    170    200    270    320    370    400    480   1200   1200   3024
+POST     /posts                                                                                 43    120    170    200    270    320    360    390    470   1100   1100   4454
+GET      /timeline/{user_id}                                                                    42    120    170    200    280    320    370    390    630   1400   1400  37345
+GET      /users/{user_id}                                                                       50    130    180    210    280    330    370    400    530   1300   1300  14862
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                             44    120    170    200    280    320    370    390    600   1400   1400 149017
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+57876              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+36216              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+14415              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+28767              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+4327               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+429                GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+210                GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+65                 POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+862                GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+529                GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+44                 POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 200 utenti (già presente)
+  → 300 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-424c564b4f30 Creating 
+ Container ad-2526-locust-run-424c564b4f30 Created 
+[2026-06-16 00:56:48,942] 511caa821dda/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 00:56:48,943] 511caa821dda/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 00:56:48,943] 511caa821dda/INFO/locust.runners: Ramping to 300 users at a rate of 20.00 per second
+[2026-06-16 00:57:02,968] 511caa821dda/INFO/locust.runners: All users spawned: {"BrowsingUser": 300} (300 total users)
+[2026-06-16 01:01:48,685] 511caa821dda/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 01:01:48,769] 511caa821dda/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                88041 86682(98.46%) |    198       2    2006     79 |  293.65      289.12
+GET      /feed/{user_id}?with_fof=true                                                  43791 43150(98.54%) |    199       2    1996     83 |  146.06      143.92
+POST     /likes                                                                          4346   252(5.80%) |    193       2    1587     73 |   14.50        0.84
+POST     /posts                                                                          6585 6491(98.57%) |    197       2    2081     78 |   21.96       21.65
+GET      /timeline/{user_id}                                                            54804 53977(98.49%) |    199       1    2079     78 |  182.79      180.03
+GET      /users/{user_id}                                                               21814 21475(98.45%) |    207       2    2098     94 |   72.76       71.63
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    219381 212027(96.65%) |    199       1    2098     81 |  731.72      707.19
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                        79    280    370    410    530    640    740    810   1200   1700   2000  88041
+GET      /feed/{user_id}?with_fof=true                                                          83    290    370    410    530    640    740    800   1200   1700   2000  43791
+POST     /likes                                                                                 73    270    360    400    520    640    730    800   1200   1600   1600   4346
+POST     /posts                                                                                 78    280    360    410    530    630    730    800   1400   2100   2100   6585
+GET      /timeline/{user_id}                                                                    78    290    370    410    530    640    740    810   1300   1900   2100  54804
+GET      /users/{user_id}                                                                       94    300    380    420    540    650    750    820   1400   2100   2100  21814
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                             81    290    370    410    530    640    740    810   1300   1800   2100 219381
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+40548              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+81687              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+50937              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+20225              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+6085               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+1250               GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+2601               GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+3040               GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+4995               GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+406                POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+252                POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+1                  GET /feed/{user_id}?with_fof=true: ConnectionResetError(104, 'Connection reset by peer')            
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 400 utenti (già presente)
+  → 500 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-6c5412d5354c Creating 
+ Container ad-2526-locust-run-6c5412d5354c Created 
+[2026-06-16 01:01:51,490] d9e4d97172a5/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 01:01:51,491] d9e4d97172a5/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 01:01:51,492] d9e4d97172a5/INFO/locust.runners: Ramping to 500 users at a rate of 20.00 per second
+[2026-06-16 01:02:15,547] d9e4d97172a5/INFO/locust.runners: All users spawned: {"BrowsingUser": 500} (500 total users)
+[2026-06-16 01:03:56,603] d9e4d97172a5/WARNING/root: CPU usage above 90%! This may constrain your throughput and may even give inconsistent response time measurements! See https://docs.locust.io/en/stable/running-distributed.html for how to distribute the load over multiple CPU cores or machines
+[2026-06-16 01:06:51,188] d9e4d97172a5/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 01:06:51,288] d9e4d97172a5/WARNING/locust.runners: CPU usage was too high at some point during the test! See https://docs.locust.io/en/stable/running-distributed.html for how to distribute the load over multiple CPU cores or machines
+[2026-06-16 01:06:51,288] d9e4d97172a5/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                85231 83941(98.49%) |    462       2    5071    180 |  284.31      280.00
+GET      /feed/{user_id}?with_fof=true                                                  43101 42428(98.44%) |    466       2    4726    180 |  143.77      141.53
+POST     /likes                                                                          4151   307(7.40%) |    467       2    4429    190 |   13.85        1.02
+POST     /posts                                                                          6481 6386(98.53%) |    473       2    4254    200 |   21.62       21.30
+GET      /timeline/{user_id}                                                            54143 53345(98.53%) |    467       2    4708    180 |  180.61      177.94
+GET      /users/{user_id}                                                               21473 21131(98.41%) |    482       2    5038    220 |   71.63       70.49
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    214580 207538(96.72%) |    466       2    5071    190 |  715.78      692.29
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                       180    510    740    890   1300   1600   2300   2800   3600   4500   5100  85231
+GET      /feed/{user_id}?with_fof=true                                                         180    520    740    900   1300   1600   2400   2800   3500   4400   4700  43101
+POST     /likes                                                                                190    520    740    880   1300   1700   2500   2800   3600   4400   4400   4151
+POST     /posts                                                                                200    530    760    910   1300   1700   2300   2800   3500   4300   4300   6481
+GET      /timeline/{user_id}                                                                   180    520    750    910   1300   1600   2300   2800   3600   4500   4700  54143
+GET      /users/{user_id}                                                                      220    530    750    910   1300   1600   2300   2800   4300   4800   5000  21473
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                            190    520    740    900   1300   1600   2300   2800   3600   4500   5100 214580
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+49359              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+77712              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+19567              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+39265              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+5887               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+3986               GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+6229               GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+3163               GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+1564               GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+499                POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+307                POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 700 utenti (già presente)
+
+==============================
+ Strategia: push_feed
+==============================
+ Container ad2526-redis Running 
+ Container ad2526-backend Recreate 
+ Container ad2526-backend Recreated 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad2526-backend Starting 
+ Container ad2526-backend Started 
+  → 10 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-ac5aa1774acd Creating 
+ Container ad-2526-locust-run-ac5aa1774acd Created 
+[2026-06-16 01:07:01,520] 023dbaac471d/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 01:07:01,521] 023dbaac471d/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 01:07:01,522] 023dbaac471d/INFO/locust.runners: Ramping to 10 users at a rate of 20.00 per second
+[2026-06-16 01:07:01,523] 023dbaac471d/INFO/locust.runners: All users spawned: {"BrowsingUser": 10} (10 total users)
+[2026-06-16 01:12:01,205] 023dbaac471d/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 01:12:01,231] 023dbaac471d/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                 4380 4316(98.54%) |     64       1    1452      3 |   14.62       14.40
+GET      /feed/{user_id}?with_fof=true                                                   2290 2250(98.25%) |     68       1    1344      3 |    7.64        7.51
+POST     /likes                                                                           219     3(1.37%) |     75       2     955      3 |    0.73        0.01
+POST     /posts                                                                           323  317(98.14%) |     62       2     924      3 |    1.08        1.06
+GET      /timeline/{user_id}                                                             2806 2762(98.43%) |     66       1    1557      3 |    9.36        9.22
+GET      /users/{user_id}                                                                1174 1152(98.13%) |     72       1    1284      3 |    3.92        3.84
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                     11192 10800(96.50%) |     66       1    1557      3 |   37.35       36.04
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                         3      3      3      3     34    700    870    930   1200   1500   1500   4380
+GET      /feed/{user_id}?with_fof=true                                                           3      3      3      4     76    710    890    960   1300   1300   1300   2290
+POST     /likes                                                                                  3      3      3      4    290    670    860    900    960    960    960    219
+POST     /posts                                                                                  3      3      3      4     20    670    840    900    920    920    920    323
+GET      /timeline/{user_id}                                                                     3      3      3      4     41    700    890    950   1200   1600   1600   2806
+GET      /users/{user_id}                                                                        3      4      4      4     78    730    940   1000   1200   1300   1300   1174
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                              3      3      3      4     48    710    880    950   1200   1500   1600  11192
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+2730               GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+2226               GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+4275               GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+24                 GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+41                 GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+1137               GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+312                POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+32                 GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+3                  POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+15                 GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+5                  POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 25 utenti (già presente)
+  → 50 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-6d07f1c188fe Creating 
+ Container ad-2526-locust-run-6d07f1c188fe Created 
+[2026-06-16 01:12:02,964] b5fffb066c60/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 01:12:02,964] b5fffb066c60/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 01:12:02,965] b5fffb066c60/INFO/locust.runners: Ramping to 50 users at a rate of 20.00 per second
+[2026-06-16 01:12:04,967] b5fffb066c60/INFO/locust.runners: All users spawned: {"BrowsingUser": 50} (50 total users)
+[2026-06-16 01:17:02,704] b5fffb066c60/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 01:17:02,732] b5fffb066c60/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                28823 28355(98.38%) |      6       1     685      3 |   96.15       94.59
+GET      /feed/{user_id}?with_fof=true                                                  14242 13995(98.27%) |      6       1     728      3 |   47.51       46.69
+POST     /likes                                                                          1409     0(0.00%) |      6       1     184      3 |    4.70        0.00
+POST     /posts                                                                          2168 2133(98.39%) |      6       1     260      3 |    7.23        7.12
+GET      /timeline/{user_id}                                                            18122 17835(98.42%) |      6       1     674      3 |   60.45       59.50
+GET      /users/{user_id}                                                                7380 7255(98.31%) |      6       1     457      3 |   24.62       24.20
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                     72144 69573(96.44%) |      6       1     728      3 |  240.67      232.09
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                         3      3      3      3     10     22     50     79    200    650    690  28823
+GET      /feed/{user_id}?with_fof=true                                                           3      3      3      3     11     24     55     85    200    630    730  14242
+POST     /likes                                                                                  3      3      3      4     11     26     55     76    180    180    180   1409
+POST     /posts                                                                                  3      3      3      4     11     20     51     87    170    260    260   2168
+GET      /timeline/{user_id}                                                                     3      3      3      3     10     23     50     79    210    650    670  18122
+GET      /users/{user_id}                                                                        3      4      4      5     12     25     48     69    170    460    460   7380
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                              3      3      3      4     11     23     51     79    200    630    730  72144
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+28353              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+7255               GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+17833              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+13994              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+2133               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+2                  GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+1                  GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+2                  GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 75 utenti (già presente)
+  → 100 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-567a1b9fef41 Creating 
+ Container ad-2526-locust-run-567a1b9fef41 Created 
+[2026-06-16 01:17:04,567] 4e85d760af96/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 01:17:04,567] 4e85d760af96/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 01:17:04,568] 4e85d760af96/INFO/locust.runners: Ramping to 100 users at a rate of 20.00 per second
+[2026-06-16 01:17:08,575] 4e85d760af96/INFO/locust.runners: All users spawned: {"BrowsingUser": 100} (100 total users)
+[2026-06-16 01:22:04,315] 4e85d760af96/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 01:22:04,351] 4e85d760af96/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                50303 49472(98.35%) |     35       1     353      5 |  167.80      165.03
+GET      /feed/{user_id}?with_fof=true                                                  25191 24803(98.46%) |     35       1     387      5 |   84.03       82.74
+POST     /likes                                                                          2556     2(0.08%) |     36       1     308      6 |    8.53        0.01
+POST     /posts                                                                          3756 3694(98.35%) |     34       1     289      5 |   12.53       12.32
+GET      /timeline/{user_id}                                                            31606 31053(98.25%) |     35       1     355      5 |  105.43      103.59
+GET      /users/{user_id}                                                               12843 12606(98.15%) |     38       1     338      9 |   42.84       42.05
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    126255 121630(96.34%) |     35       1     387      6 |  421.16      405.73
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                         5     26     50     68    120    160    200    220    280    320    350  50303
+GET      /feed/{user_id}?with_fof=true                                                           5     26     49     67    120    160    200    220    280    330    390  25191
+POST     /likes                                                                                  6     27     53     69    120    150    190    220    280    310    310   2556
+POST     /posts                                                                                  5     24     48     65    110    150    190    210    280    290    290   3756
+GET      /timeline/{user_id}                                                                     5     25     49     66    120    160    200    220    270    320    360  31606
+GET      /users/{user_id}                                                                        9     29     54     71    120    160    200    220    290    330    340  12843
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                              6     26     50     68    120    160    200    220    280    320    390 126255
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+31035              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+49447              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+24790              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+12598              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+3692               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+13                 GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+2                  POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+8                  GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+25                 GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+18                 GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+2                  POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 150 utenti (già presente)
+  → 200 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-0f3e6a7a49a9 Creating 
+ Container ad-2526-locust-run-0f3e6a7a49a9 Created 
+[2026-06-16 01:22:06,458] 9fb59ac6d137/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 01:22:06,459] 9fb59ac6d137/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 01:22:06,459] 9fb59ac6d137/INFO/locust.runners: Ramping to 200 users at a rate of 20.00 per second
+[2026-06-16 01:22:15,490] 9fb59ac6d137/INFO/locust.runners: All users spawned: {"BrowsingUser": 200} (200 total users)
+[2026-06-16 01:27:06,200] 9fb59ac6d137/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 01:27:06,251] 9fb59ac6d137/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                63846 62896(98.51%) |    168       1     906    140 |  212.97      209.80
+GET      /feed/{user_id}?with_fof=true                                                  31992 31525(98.54%) |    167       1    1014    130 |  106.72      105.16
+POST     /likes                                                                          3101   152(4.90%) |    172       2     740    140 |   10.34        0.51
+POST     /posts                                                                          4764 4702(98.70%) |    172       2     724    140 |   15.89       15.68
+GET      /timeline/{user_id}                                                            39895 39277(98.45%) |    168       1     793    140 |  133.08      131.02
+GET      /users/{user_id}                                                               16140 15873(98.35%) |    171       2     773    140 |   53.84       52.95
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    159738 154425(96.67%) |    168       1    1014    140 |  532.84      515.12
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                       140    250    300    330    400    440    490    520    630    760    910  63846
+GET      /feed/{user_id}?with_fof=true                                                         130    250    300    330    400    440    490    520    660    790   1000  31992
+POST     /likes                                                                                140    260    310    340    400    450    500    530    700    740    740   3101
+POST     /posts                                                                                140    260    310    330    400    440    500    540    670    720    720   4764
+GET      /timeline/{user_id}                                                                   140    250    300    330    400    440    490    520    650    750    790  39895
+GET      /users/{user_id}                                                                      140    250    310    330    400    440    490    530    670    770    770  16140
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                            140    250    300    330    400    440    490    520    650    770   1000 159738
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+15132              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+60002              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+37449              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+30093              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+4473               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+1828               GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+741                GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+152                POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+2894               GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+1432               GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+229                POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 300 utenti (già presente)
+  → 400 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-b9fae7a4119f Creating 
+ Container ad-2526-locust-run-b9fae7a4119f Created 
+[2026-06-16 01:27:08,722] 9c86d2ee7f5b/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 01:27:08,722] 9c86d2ee7f5b/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 01:27:08,723] 9c86d2ee7f5b/INFO/locust.runners: Ramping to 400 users at a rate of 20.00 per second
+[2026-06-16 01:27:27,789] 9c86d2ee7f5b/INFO/locust.runners: All users spawned: {"BrowsingUser": 400} (400 total users)
+[2026-06-16 01:29:08,756] 9c86d2ee7f5b/WARNING/root: CPU usage above 90%! This may constrain your throughput and may even give inconsistent response time measurements! See https://docs.locust.io/en/stable/running-distributed.html for how to distribute the load over multiple CPU cores or machines
+[2026-06-16 01:32:08,440] 9c86d2ee7f5b/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 01:32:08,537] 9c86d2ee7f5b/WARNING/locust.runners: CPU usage was too high at some point during the test! See https://docs.locust.io/en/stable/running-distributed.html for how to distribute the load over multiple CPU cores or machines
+[2026-06-16 01:32:08,537] 9c86d2ee7f5b/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                92433 91074(98.53%) |    298       2    2793    100 |  308.32      303.79
+GET      /feed/{user_id}?with_fof=true                                                  46369 45663(98.48%) |    301       2    3030    110 |  154.67      152.31
+POST     /likes                                                                          4604   284(6.17%) |    294       2    2973     98 |   15.36        0.95
+POST     /posts                                                                          6865 6775(98.69%) |    301       2    2556    110 |   22.90       22.60
+GET      /timeline/{user_id}                                                            57784 56932(98.53%) |    297       2    3054    100 |  192.74      189.90
+GET      /users/{user_id}                                                               23253 22912(98.53%) |    308       2    3194    130 |   77.56       76.43
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    231308 223640(96.68%) |    299       2    3194    110 |  771.55      745.97
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                       100    380    490    550    840   1200   1400   1500   2200   2600   2800  92433
+GET      /feed/{user_id}?with_fof=true                                                         110    380    490    550    860   1200   1400   1600   2200   2700   3000  46369
+POST     /likes                                                                                 98    370    480    550    810   1100   1300   1500   2200   3000   3000   4604
+POST     /posts                                                                                110    390    500    550    820   1200   1300   1500   2100   2600   2600   6865
+GET      /timeline/{user_id}                                                                   100    370    490    550    840   1200   1400   1500   2200   2700   3100  57784
+GET      /users/{user_id}                                                                      130    390    500    560    850   1200   1400   1500   2200   3000   3200  23253
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                            110    380    490    550    840   1200   1400   1500   2200   2700   3200 231308
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+42696              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+85183              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+21480              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+53279              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+6334               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+5891               GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+3653               GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+2967               GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+1432               GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+284                POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+441                POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 500 utenti (già presente)
+  → 700 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-8a0363914f67 Creating 
+ Container ad-2526-locust-run-8a0363914f67 Created 
+[2026-06-16 01:32:11,409] 09a781699e0a/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 01:32:11,410] 09a781699e0a/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 01:32:11,411] 09a781699e0a/INFO/locust.runners: Ramping to 700 users at a rate of 20.00 per second
+[2026-06-16 01:32:45,490] 09a781699e0a/INFO/locust.runners: All users spawned: {"BrowsingUser": 700} (700 total users)
+[2026-06-16 01:34:11,459] 09a781699e0a/WARNING/root: CPU usage above 90%! This may constrain your throughput and may even give inconsistent response time measurements! See https://docs.locust.io/en/stable/running-distributed.html for how to distribute the load over multiple CPU cores or machines
+[2026-06-16 01:37:11,097] 09a781699e0a/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 01:37:11,272] 09a781699e0a/WARNING/locust.runners: CPU usage was too high at some point during the test! See https://docs.locust.io/en/stable/running-distributed.html for how to distribute the load over multiple CPU cores or machines
+[2026-06-16 01:37:11,272] 09a781699e0a/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                               116726 115086(98.60%) |    475       0    4673    330 |  389.28      383.82
+GET      /feed/{user_id}?with_fof=true                                                  58327 57424(98.45%) |    470       0    4530    320 |  194.52      191.51
+POST     /likes                                                                          5775   501(8.68%) |    468       2    3732    330 |   19.26        1.67
+POST     /posts                                                                          8653 8529(98.57%) |    470       2    4533    320 |   28.86       28.44
+GET      /timeline/{user_id}                                                            72834 71728(98.48%) |    470       0    4751    320 |  242.90      239.22
+GET      /users/{user_id}                                                               29049 28625(98.54%) |    490       0    4843    350 |   96.88       95.47
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    291364 281893(96.75%) |    474       0    4843    330 |  971.71      940.12
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                       330    610    750    830   1100   1400   2200   2600   3500   4200   4700 116726
+GET      /feed/{user_id}?with_fof=true                                                         320    600    740    820   1100   1400   2100   2600   3400   4200   4500  58327
+POST     /likes                                                                                330    600    740    820   1100   1400   2000   2500   3400   3700   3700   5775
+POST     /posts                                                                                320    610    750    830   1100   1400   2100   2600   3400   4500   4500   8653
+GET      /timeline/{user_id}                                                                   320    610    740    820   1100   1400   2200   2600   3500   4300   4800  72834
+GET      /users/{user_id}                                                                      350    620    760    830   1100   1400   2100   2600   4100   4800   4800  29049
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                            330    610    750    830   1100   1400   2200   2600   3500   4400   4800 291364
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+65642              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+52744              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+105381             GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+26269              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+7780               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+4836               GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+7744               GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+3704               GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+1878               GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+585                POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+405                POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+24                 GET /feed/{user_id}?with_fof=true: RemoteDisconnected('Remote end closed connection without response')
+36                 GET /feed/{user_id}: RemoteDisconnected('Remote end closed connection without response')            
+30                 GET /timeline/{user_id}: RemoteDisconnected('Remote end closed connection without response')        
+239                GET /feed/{user_id}: ConnectionResetError(104, 'Connection reset by peer')                          
+14                 GET /users/{user_id}: RemoteDisconnected('Remote end closed connection without response')           
+2                  POST /posts: RemoteDisconnected('Remote end closed connection without response')                    
+173                GET /timeline/{user_id}: ConnectionResetError(104, 'Connection reset by peer')                      
+66                 GET /users/{user_id}: ConnectionResetError(104, 'Connection reset by peer')                         
+113                GET /feed/{user_id}?with_fof=true: ConnectionResetError(104, 'Connection reset by peer')            
+15                 POST /posts: ConnectionResetError(104, 'Connection reset by peer')                                  
+12                 POST /likes: ConnectionResetError(104, 'Connection reset by peer')                                  
+660                GET /feed/{user_id}?with_fof=true: ConnectionRefusedError(111, 'Connection refused')                
+1338               GET /feed/{user_id}: ConnectionRefusedError(111, 'Connection refused')                              
+838                GET /timeline/{user_id}: ConnectionRefusedError(111, 'Connection refused')                          
+117                POST /posts: ConnectionRefusedError(111, 'Connection refused')                                      
+327                GET /users/{user_id}: ConnectionRefusedError(111, 'Connection refused')                             
+65                 POST /likes: ConnectionRefusedError(111, 'Connection refused')                                      
+348                GET /feed/{user_id}: gaierror(-3, 'Temporary failure in name resolution')                           
+209                GET /timeline/{user_id}: gaierror(-3, 'Temporary failure in name resolution')                       
+179                GET /feed/{user_id}?with_fof=true: gaierror(-3, 'Temporary failure in name resolution')             
+30                 POST /posts: gaierror(-3, 'Temporary failure in name resolution')                                   
+19                 POST /likes: gaierror(-3, 'Temporary failure in name resolution')                                   
+71                 GET /users/{user_id}: gaierror(-3, 'Temporary failure in name resolution')                          
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+==============================
+ Strategia: hybrid
+==============================
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+  → Skip 10 utenti (già presente)
+  → 25 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-a0bab890ea26 Creating 
+ Container ad-2526-locust-run-a0bab890ea26 Created 
+[2026-06-16 01:37:19,136] ed5e3caf3ac8/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 01:37:19,137] ed5e3caf3ac8/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 01:37:19,138] ed5e3caf3ac8/INFO/locust.runners: Ramping to 25 users at a rate of 20.00 per second
+[2026-[2026-06-16 01:39:15,523] 4f041dc38522/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 01[2026-06-16 01:42:18,889] ed5e3caf3ac8/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 01:42:18,915] ed5e3caf3ac8/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                14740 14532(98.59%) |      3       1     736      3 |   49.17       48.48
+GET      /feed/{user_id}?with_fof=true                                                   7424 7308(98.44%) |      3       1     694      3 |   24.77       24.38
+POST     /likes                                                                           729     0(0.00%) |      3       1      57      3 |    2.43        0.00
+POST     /posts                                                                          1094 1071(97.90%) |      2       1      36      3 |    3.65        3.57
+GET      /timeline/{user_id}                                                             9079 8935(98.41%) |      3       1     563      2 |   30.29       29.81
+GET      /users/{user_id}                                                                3666 3618(98.69%) |      3       1     572      3 |   12.23       12.07
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                     36732 35464(96.55%) |      3       1     736      3 |  122.54      118.31
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                         3      3      3      3      3      4     12     18     74    690    740  14740
+GET      /feed/{user_id}?with_fof=true                                                           3      3      3      3      3      4     10     16    170    690    690   7424
+POST     /likes                                                                                  3      3      3      3      3      4     14     20     57     57     57    729
+POST     /posts                                                                                  3      3      3      3      3      4      8     11     23     37     37   1094
+GET      /timeline/{user_id}                                                                     2      3      3      3      3      4     11     18     51    560    560   9079
+GET      /users/{user_id}                                                                        3      3      3      3      4      5     11     16     61    570    570   3666
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                              3      3      3      3      3      4     11     18     70    690    740  36732
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+14532              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+7308               GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+8935               GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+3618               GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+1071               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 50 utenti (già presente)
+  → 75 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-6b31af0c24b7 Creating 
+ Container ad-2526-locust-run-6b31af0c24b7 Created 
+[2026-06-16 01:42:20,645] 4d5e4d3dc4d6/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 01:42:20,646] 4d5e4d3dc4d6/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 01:42:20,647] 4d5e4d3dc4d6/INFO/locust.runners: Ramping to 75 users at a rate of 20.00 per second
+[2026-06-16 01:42:23,650] 4d5e4d3dc4d6/INFO/locust.runners: All users spawned: {"BrowsingUser": 75} (75 total users)
+[2026-06-16 01:47:20,397] 4d5e4d3dc4d6/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 01:47:20,433] 4d5e4d3dc4d6/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                42399 41714(98.38%) |     11       1     315      3 |  141.43      139.15
+GET      /feed/{user_id}?with_fof=true                                                  21164 20808(98.32%) |     11       1     301      3 |   70.60       69.41
+POST     /likes                                                                          2039     1(0.05%) |     11       1     289      3 |    6.80        0.00
+POST     /posts                                                                          3105 3044(98.04%) |     11       1     298      3 |   10.36       10.15
+GET      /timeline/{user_id}                                                            26541 26105(98.36%) |     11       1     289      3 |   88.53       87.08
+GET      /users/{user_id}                                                               10467 10300(98.40%) |     12       1     306      4 |   34.92       34.36
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    105715 101972(96.46%) |     11       1     315      3 |  352.64      340.15
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                         3      3      4     10     29     58    100    130    220    300    320  42399
+GET      /feed/{user_id}?with_fof=true                                                           3      4      4     10     29     61    100    130    220    280    300  21164
+POST     /likes                                                                                  3      4      5     11     31     62    100    130    210    290    290   2039
+POST     /posts                                                                                  3      4      5     10     28     59     97    140    220    300    300   3105
+GET      /timeline/{user_id}                                                                     3      3      4     10     28     59    100    140    210    290    290  26541
+GET      /users/{user_id}                                                                        4      5      6     11     30     59     99    130    210    310    310  10467
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                              3      4      5     10     29     59    100    130    210    300    320 105715
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+41711              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+3044               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+20807              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+10299              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+26104              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+3                  GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+1                  GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+1                  GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+1                  POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+1                  GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 100 utenti (già presente)
+  → 150 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-73939ab34b7b Creating 
+ Container ad-2526-locust-run-73939ab34b7b Created 
+[2026-06-16 01:47:23,477] c2513fdfd53d/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 01:47:23,478] c2513fdfd53d/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 01:47:23,479] c2513fdfd53d/INFO/locust.runners: Ramping to 150 users at a rate of 20.00 per second
+[2026-06-16 01:47:30,487] c2513fdfd53d/INFO/locust.runners: All users spawned: {"BrowsingUser": 150} (150 total users)
+[2026-06-16 01:52:23,225] c2513fdfd53d/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 01:52:23,273] c2513fdfd53d/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                61595 60629(98.43%) |     88       1    1893     27 |  205.46      202.24
+GET      /feed/{user_id}?with_fof=true                                                  30939 30430(98.35%) |     88       1    1848     27 |  103.20      101.50
+POST     /likes                                                                          3071    39(1.27%) |     88       2    1300     28 |   10.24        0.13
+POST     /posts                                                                          4586 4521(98.58%) |     89       1    1861     30 |   15.30       15.08
+GET      /timeline/{user_id}                                                            38054 37463(98.45%) |     88       1    1867     27 |  126.94      124.96
+GET      /users/{user_id}                                                               15253 14994(98.30%) |     92       1    1809     33 |   50.88       50.01
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    153498 148076(96.47%) |     89       1    1893     28 |  512.02      493.93
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                        27     95    150    190    270    320    360    390   1000   1700   1900  61595
+GET      /feed/{user_id}?with_fof=true                                                          27     95    150    190    270    320    360    390   1100   1800   1800  30939
+POST     /likes                                                                                 28     95    150    190    270    320    360    390    500   1300   1300   3071
+POST     /posts                                                                                 30     95    150    190    280    320    360    380    690   1900   1900   4586
+GET      /timeline/{user_id}                                                                    27     95    150    190    270    320    360    390    810   1800   1900  38054
+GET      /users/{user_id}                                                                       33    100    160    190    280    330    370    390   1100   1800   1800  15253
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                             28     96    150    190    270    320    360    390   1000   1800   1900 153498
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+60032              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+30152              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+14839              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+37085              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+4477               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+278                GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+597                GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+378                GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+155                GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+44                 POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+39                 POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 200 utenti (già presente)
+  → 300 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-3189f68548dd Creating 
+ Container ad-2526-locust-run-3189f68548dd Created 
+[2026-06-16 01:52:26,324] be5a688841a0/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 01:52:26,324] be5a688841a0/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 01:52:26,325] be5a688841a0/INFO/locust.runners: Ramping to 300 users at a rate of 20.00 per second
+[2026-06-16 01:52:40,350] be5a688841a0/INFO/locust.runners: All users spawned: {"BrowsingUser": 300} (300 total users)
+[2026-06-16 01:57:26,054] be5a688841a0/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 01:57:26,118] be5a688841a0/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                87441 86131(98.50%) |    201       1    1739     89 |  291.68      287.31
+GET      /feed/{user_id}?with_fof=true                                                  43061 42444(98.57%) |    202       2    1442     89 |  143.64      141.58
+POST     /likes                                                                          4372   288(6.59%) |    199       2    1221     89 |   14.58        0.96
+POST     /posts                                                                          6465 6358(98.34%) |    202       2    1434     88 |   21.57       21.21
+GET      /timeline/{user_id}                                                            54584 53743(98.46%) |    202       2    1603     92 |  182.08      179.27
+GET      /users/{user_id}                                                               21756 21417(98.44%) |    209       2    1440    110 |   72.57       71.44
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    217679 210381(96.65%) |    202       1    1739     92 |  726.11      701.77
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                        89    300    380    420    530    630    720    790    990   1300   1700  87441
+GET      /feed/{user_id}?with_fof=true                                                          89    300    380    420    530    630    720    780   1000   1300   1400  43061
+POST     /likes                                                                                 89    290    380    410    520    620    710    780   1000   1200   1200   4372
+POST     /posts                                                                                 88    300    380    420    540    640    740    800    970   1400   1400   6465
+GET      /timeline/{user_id}                                                                    92    300    380    420    530    630    730    790   1000   1300   1600  54584
+GET      /users/{user_id}                                                                      110    310    380    420    540    640    730    790   1000   1300   1400  21756
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                             92    300    380    420    530    630    730    790   1000   1300   1700 217679
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+19994              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+80593              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+50329              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+39787              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+5933               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+3414               GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+5538               GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+2657               GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+1423               GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+425                POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+288                POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 400 utenti (già presente)
+  → 500 utenti...
+ Container ad2526-redis Running 
+ Container ad2526-backend Running 
+ Container ad2526-redis Waiting 
+ Container ad2526-redis Healthy 
+ Container ad-2526-locust-run-e30972852f87 Creating 
+ Container ad-2526-locust-run-e30972852f87 Created 
+[2026-06-16 01:57:28,859] 6ddef0bbbaab/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 01:57:28,859] 6ddef0bbbaab/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 01:57:28,861] 6ddef0bbbaab/INFO/locust.runners: Ramping to 500 users at a rate of 20.00 per second
+[2026-06-16 01:57:52,908] 6ddef0bbbaab/INFO/locust.runners: All users spawned: {"BrowsingUser": 500} (500 total users)
+[2026-06-16 01:59:28,960] 6ddef0bbbaab/WARNING/root: CPU usage above 90%! This may constrain your throughput and may even give inconsistent response time measurements! See https://docs.locust.io/en/stable/running-distributed.html for how to distribute the load over multiple CPU cores or machines
+[2026-06-16 02:02:28,548] 6ddef0bbbaab/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 02:02:28,650] 6ddef0bbbaab/WARNING/locust.runners: CPU usage was too high at some point during the test! See https://docs.locust.io/en/stable/running-distributed.html for how to distribute the load over multiple CPU cores or machines
+[2026-06-16 02:02:28,650] 6ddef0bbbaab/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                                83221 81958(98.48%) |    486       2    4816    220 |  277.61      273.39
+GET      /feed/{user_id}?with_fof=true                                                  41401 40763(98.46%) |    488       2    5396    230 |  138.10      135.98
+POST     /likes                                                                          4133   345(8.35%) |    509       2    3999    240 |   13.79        1.15
+POST     /posts                                                                          6340 6229(98.25%) |    490       2    4362    220 |   21.15       20.78
+GET      /timeline/{user_id}                                                            51812 51033(98.50%) |    486       2    4796    220 |  172.83      170.24
+GET      /users/{user_id}                                                               20816 20536(98.65%) |    503       2    5077    250 |   69.44       68.50
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    207723 200864(96.70%) |    489       2    5396    230 |  692.92      670.04
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                       220    570    810    950   1300   1600   2300   2700   3600   4500   4800  83221
+GET      /feed/{user_id}?with_fof=true                                                         230    580    810    950   1300   1600   2300   2700   3700   4400   5400  41401
+POST     /likes                                                                                240    590    840    970   1300   1700   2500   2900   3700   4000   4000   4133
+POST     /posts                                                                                220    580    810    950   1300   1700   2300   2700   3800   4400   4400   6340
+GET      /timeline/{user_id}                                                                   220    570    810    950   1300   1600   2300   2700   3500   4500   4800  51812
+GET      /users/{user_id}                                                                      250    580    820    950   1300   1700   2400   2800   4100   4700   5100  20816
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                            230    580    810    950   1300   1600   2300   2700   3700   4600   5400 207723
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+75448              GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+46929              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+18929              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+5727               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+37463              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+6510               GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+345                POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+3299               GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+1607               GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+4104               GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+502                POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+1                  GET /feed/{user_id}?with_fof=true: ConnectionResetError(104, 'Connection reset by peer')            
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  → Skip 700 utenti (già presente)
+
+Done. Risultati in ~/AD-2526/results/
+ Container ad-2526-locust-run-8d731af76992 Creating 
+ Container ad-2526-locust-run-8d731af76992 Created 
+[2026-06-16 01:59:27,288] 8ceab60d5336/INFO/locust.main: Starting Locust 2.32.3
+[2026-06-16 01:59:27,289] 8ceab60d5336/INFO/locust.main: Run time limit set to 300 seconds
+[2026-06-16 01:59:27,290] 8ceab60d5336/INFO/locust.runners: Ramping to 700 users at a rate of 20.00 per second
+[2026-06-16 02:00:01,410] 8ceab60d5336/INFO/locust.runners: All users spawned: {"BrowsingUser": 700} (700 total users)
+[2026-06-16 02:02:37,438] 8ceab60d5336/WARNING/root: CPU usage above 90%! This may constrain your throughput and may even give inconsistent response time measurements! See https://docs.locust.io/en/stable/running-distributed.html for how to distribute the load over multiple CPU cores or machines
+[2026-06-16 02:04:26,966] 8ceab60d5336/INFO/locust.main: --run-time limit reached, shutting down
+[2026-06-16 02:04:27,181] 8ceab60d5336/WARNING/locust.runners: CPU usage was too high at some point during the test! See https://docs.locust.io/en/stable/running-distributed.html for how to distribute the load over multiple CPU cores or machines
+[2026-06-16 02:04:27,181] 8ceab60d5336/INFO/locust.main: Shutting down (exit code 1)
+Type     Name                                                                          # reqs      # fails |    Avg     Min     Max    Med |   req/s  failures/s
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+GET      /feed/{user_id}                                                               116285 114419(98.40%) |    470       2    4813    180 |  387.78      381.55
+GET      /feed/{user_id}?with_fof=true                                                  58330 57464(98.52%) |    470       2    4794    180 |  194.51      191.63
+POST     /likes                                                                          5674   361(6.36%) |    466       2    4358    170 |   18.92        1.20
+POST     /posts                                                                          8834 8691(98.38%) |    463       2    4608    180 |   29.46       28.98
+GET      /timeline/{user_id}                                                            72568 71403(98.39%) |    469       2    4687    180 |  241.99      238.11
+GET      /users/{user_id}                                                               28792 28353(98.48%) |    496       2    4811    210 |   96.01       94.55
+--------|----------------------------------------------------------------------------|-------|-------------|-------|-------|-------|-------|--------|-----------
+         Aggregated                                                                    290483 280691(96.63%) |    472       2    4813    180 |  968.68      936.02
+
+Response time percentiles (approximated)
+Type     Name                                                                                  50%    66%    75%    80%    90%    95%    98%    99%  99.9% 99.99%   100% # reqs
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+GET      /feed/{user_id}                                                                       180    460    720    890   1300   1700   2500   2800   3600   4300   4800 116285
+GET      /feed/{user_id}?with_fof=true                                                         180    460    710    890   1300   1700   2500   2800   3500   4500   4800  58330
+POST     /likes                                                                                170    450    710    870   1300   1700   2500   2800   3500   4400   4400   5674
+POST     /posts                                                                                180    450    700    870   1300   1700   2500   2800   3700   4600   4600   8834
+GET      /timeline/{user_id}                                                                   180    460    710    880   1300   1700   2500   2900   3600   4400   4700  72568
+GET      /users/{user_id}                                                                      210    480    740    910   1300   1700   2600   3000   4300   4800   4800  28792
+--------|--------------------------------------------------------------------------------|--------|------|------|------|------|------|------|------|------|------|------|------
+         Aggregated                                                                            180    460    720    890   1300   1700   2500   2900   3700   4500   4800 290483
+
+Error report
+# occurrences      Error                                                                                               
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+67045              GET /timeline/{user_id}: HTTPError('404 Client Error: Not Found for url: /timeline/{user_id}')      
+107507             GET /feed/{user_id}: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}')              
+54026              GET /feed/{user_id}?with_fof=true: HTTPError('404 Client Error: Not Found for url: /feed/{user_id}?with_fof=true')
+8177               POST /posts: HTTPError('404 Client Error: Not Found for url: /posts')                               
+26691              GET /users/{user_id}: HTTPError('404 Client Error: Not Found for url: /users/{user_id}')            
+6907               GET /feed/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}')  
+1661               GET /users/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /users/{user_id}')
+3438               GET /feed/{user_id}?with_fof=true: HTTPError('500 Server Error: Internal Server Error for url: /feed/{user_id}?with_fof=true')
+4353               GET /timeline/{user_id}: HTTPError('500 Server Error: Internal Server Error for url: /timeline/{user_id}')
+513                POST /posts: HTTPError('500 Server Error: Internal Server Error for url: /posts')                   
+361                POST /likes: HTTPError('500 Server Error: Internal Server Error for url: /likes')                   
+4                  GET /feed/{user_id}: RemoteDisconnected('Remote end closed connection without response')            
+5                  GET /timeline/{user_id}: RemoteDisconnected('Remote end closed connection without response')        
+1                  GET /users/{user_id}: RemoteDisconnected('Remote end closed connection without response')           
+1                  POST /posts: RemoteDisconnected('Remote end closed connection without response')                    
+1                  GET /feed/{user_id}: ConnectionResetError(104, 'Connection reset by peer')                          
+------------------|---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+Done. Risultati in ~/AD-2526/results/

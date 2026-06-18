@@ -1,0 +1,26 @@
+# Esclude tutto il superfluo dal build context root.
+# Le istruzioni COPY nei Dockerfile prendono solo quello che serve.
+
+.git/
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Dati e artefatti runtime
+datasets/
+backend/results/
+backend/users.csv
+backend/requests.log
+pg_snapshot.pgdump
+*.log
+
+# File di configurazione non necessari nell'immagine
+.env
+backend/.env
+infra/
+
+# IDE
+.vscode/
+.idea/

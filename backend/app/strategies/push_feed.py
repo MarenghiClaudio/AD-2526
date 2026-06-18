@@ -151,6 +151,15 @@ class PushFeedStrategy(CacheStrategy):
         post_ids = ctx.cache.zrevrange_ids(tl_key, end=limit - 1)
 
         if post_ids is None:
+            # Prima di ricostruire da DB, controlla il sentinel di timeline
+            # nota-vuota. Redis non supporta ZSET vuoti, quindi usiamo una
+            # chiave stringa separata (tl_key + ":empty") per memoizzare il
+            # risultato del rebuild quando non ci sono post nel range.
+            # Senza questo check, ogni fetch_timeline per un utente senza
+            # follow/post recenti eseguirebbe una query PG completa.
+            sentinel = ctx.cache.get_model_list(tl_key + ":empty", TimelineItem)
+            if sentinel is not None:
+                return []
             return self._rebuild_timeline(ctx, viewer_id, limit)
 
         if not post_ids:
@@ -212,11 +221,17 @@ class PushFeedStrategy(CacheStrategy):
             limit=_MAX_TIMELINE,
             db_timer=ctx.db_timer,
         )
+        tl_key = _tl_key(viewer_id)
         if not items:
+            # Memoizza il risultato vuoto con un sentinel stringa. Il prossimo
+            # fetch_timeline troverà il sentinel e restituirà [] senza query PG.
+            # Il sentinel viene invalidato da on_follow_* e on_post_created.
+            ctx.cache.set_model_list(
+                tl_key + ":empty", [], ttl=ctx.settings.cache_ttl_timeline
+            )
             return []
 
         # Popola lo ZSET con post_id come member (NON il JSON completo).
-        tl_key = _tl_key(viewer_id)
         id_score_map = {str(it.post_id): it.created_at.timestamp() for it in items}
         ctx.cache.zadd_bulk(
             tl_key, id_score_map, ttl=ctx.settings.cache_ttl_timeline
@@ -311,8 +326,16 @@ class PushFeedStrategy(CacheStrategy):
         if not follower_ids:
             return
 
-        # Member = post_id come stringa (NON il JSON del TimelineItem).
+        # 3a. Invalida i sentinel di timeline-vuota per i follower cold-cache,
+        # così al prossimo fetch_timeline faranno un rebuild completo (e vedranno
+        # il nuovo post) invece di ricevere [] dal sentinel stale.
+        sentinel_keys = [_tl_key(fid) + ":empty" for fid in follower_ids]
+        ctx.cache.delete(*sentinel_keys)
+
+        # 3b. Fan-out: member = post_id come stringa (NON il JSON del TimelineItem).
         # Score = timestamp di created_at per ordinamento DESC al read.
+        # zadd_fanout esegue ZADD solo sui ZSET già esistenti (warm cache);
+        # i follower cold-cache faranno rebuild lazy al prossimo read.
         ctx.cache.zadd_fanout(
             keys=[_tl_key(fid) for fid in follower_ids],
             member=str(post_id),
@@ -346,8 +369,8 @@ class PushFeedStrategy(CacheStrategy):
         self, ctx: StrategyContext, follower_id: int, followed_id: int
     ) -> None:
         # La timeline del follower è ora out-of-date (manca i post del
-        # nuovo followed). Invalida → rebuild lazy al prossimo fetch_timeline.
-        ctx.cache.delete_keys(_tl_key(follower_id))
+        # nuovo followed). Invalida ZSET e sentinel → rebuild lazy al prossimo read.
+        ctx.cache.delete_keys(_tl_key(follower_id), _tl_key(follower_id) + ":empty")
 
         # Aggiorna entrambi i profili: 2 query PG sequenziali (come oggi),
         # ma i SET Redis NON sono batched per mantenere il codice semplice
@@ -362,7 +385,7 @@ class PushFeedStrategy(CacheStrategy):
     def on_follow_removed(
         self, ctx: StrategyContext, follower_id: int, followed_id: int
     ) -> None:
-        ctx.cache.delete_keys(_tl_key(follower_id))
+        ctx.cache.delete_keys(_tl_key(follower_id), _tl_key(follower_id) + ":empty")
         for uid in (follower_id, followed_id):
             profile = users_repo.query_user_profile(ctx.conn, uid, ctx.db_timer)
             if profile is not None:

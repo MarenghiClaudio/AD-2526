@@ -21,12 +21,12 @@ SELECT
     p.user_id,
     p.content,
     p.created_at,
-    COALESCE(l.cnt, 0) AS like_count
+    l.cnt AS like_count
 FROM posts p
 JOIN followed f ON f.followed_id = p.user_id
-LEFT JOIN (
-    SELECT post_id, COUNT(*) AS cnt FROM likes GROUP BY post_id
-) l ON l.post_id = p.post_id
+LEFT JOIN LATERAL (
+    SELECT COUNT(*) AS cnt FROM likes WHERE post_id = p.post_id
+) l ON TRUE
 WHERE p.created_at >= NOW() - (%(window_days)s || ' days')::interval
 ORDER BY p.created_at DESC
 LIMIT %(limit)s
@@ -49,11 +49,11 @@ candidates AS (
     WHERE p.created_at >= NOW() - (%(window_days)s || ' days')::interval
 ),
 candidates_likes AS (
-    SELECT c.*, COALESCE(l.cnt, 0) AS like_count
+    SELECT c.*, l.cnt AS like_count
     FROM candidates c
-    LEFT JOIN (
-        SELECT post_id, COUNT(*) AS cnt FROM likes GROUP BY post_id
-    ) l ON l.post_id = c.post_id
+    LEFT JOIN LATERAL (
+        SELECT COUNT(*) AS cnt FROM likes WHERE post_id = c.post_id
+    ) l ON TRUE
 )
 SELECT
     post_id,
@@ -103,11 +103,11 @@ candidates AS (
     WHERE p.created_at >= NOW() - (%(window_days)s || ' days')::interval
 ),
 candidates_likes AS (
-    SELECT c.*, COALESCE(l.cnt, 0) AS like_count
+    SELECT c.*, l.cnt AS like_count
     FROM candidates c
-    LEFT JOIN (
-        SELECT post_id, COUNT(*) AS cnt FROM likes GROUP BY post_id
-    ) l ON l.post_id = c.post_id
+    LEFT JOIN LATERAL (
+        SELECT COUNT(*) AS cnt FROM likes WHERE post_id = c.post_id
+    ) l ON TRUE
 )
 SELECT
     post_id,

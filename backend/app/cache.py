@@ -128,9 +128,6 @@ class CacheService:
     Wrapper di Redis pensato per i benchmark:
       * misura il tempo speso in Redis aggiornando `timing.cache`
       * marca `timing.cache_hit` sulla PRIMA get_* della request
-      * `enabled=False` → fa passare tutte le get come MISS, tutte le set/delete
-        come no-op → permette di tornare alla baseline Fase 1 senza rimuovere
-        il codice (basta `CACHE_ENABLED=false` nel .env)
 
     Le repository chiamano:
         cached = cache.get_model(key, Model)
@@ -283,18 +280,18 @@ class CacheService:
         max_size: int,
     ) -> None:
         """
-        Fan-out di un singolo `member` su N sorted set.
+        Fan-out di un singolo `member` su N sorted set **già esistenti**.
 
-        Per ogni chiave: ZCARD + ZADD + EXPIRE in una pipeline. Lo
-        ZREMRANGEBYRANK (trim al max_size) viene eseguito SOLO sui set la
-        cui cardinalità eccede max_size dopo lo ZADD — verificato dal valore
-        di ritorno di ZCARD + ZADD.
+        Pre-check EXISTS (pipeline): il ZADD viene eseguito SOLO sulle chiavi
+        che già esistono in Redis. Questo previene la creazione di ZSET
+        parziali per follower a cache fredda: se il loro ZSET non esiste,
+        vedranno un MISS al prossimo read e faranno un rebuild completo da DB
+        invece di ricevere una timeline con un solo post.
 
-        Costo dei comandi sul main-loop Redis:
-        v1 push_feed:  3·N comandi sempre (ZADD + ZREMRANGEBYRANK + EXPIRE).
-        qui:           3·N (ZCARD + ZADD + EXPIRE) + k·N (trim) con k ≪ 1.
-                        In regime stazionario k = 0: solo quando il set
-                        raggiunge max_size per la prima volta paga il trim.
+        Costo dei comandi:
+          pre-check:  N comandi EXISTS in pipeline (1 round-trip)
+          stage 1:    3·W comandi (ZCARD + ZADD + EXPIRE), W = warm keys
+          stage 2:    k·W comandi ZREMRANGEBYRANK (trim selettivo, k ≪ 1)
 
         Two-stage pipeline (ZCARD/ZADD/EXPIRE → analisi → trim selettivo) è
         deliberato: ZADD ritorna 1/0 a seconda che abbia aggiunto un nuovo
@@ -304,9 +301,20 @@ class CacheService:
             return
 
         with self._timing.cache.measure():
-            # Stage 1: ZCARD + ZADD + EXPIRE per ogni chiave
-            stage1 = self._client.pipeline()
+            # Pre-check: filtra solo i sorted set già presenti in Redis.
+            # I follower a cache fredda faranno rebuild completo al prossimo read.
+            pre = self._client.pipeline()
             for k in keys:
+                pre.exists(k)
+            existence = pre.execute()
+
+            warm_keys = [k for k, ex in zip(keys, existence) if ex]
+            if not warm_keys:
+                return
+
+            # Stage 1: ZCARD + ZADD + EXPIRE per ogni chiave warm
+            stage1 = self._client.pipeline()
+            for k in warm_keys:
                 stage1.zcard(k)
                 stage1.zadd(k, {member: score})
                 stage1.expire(k, ttl)
@@ -314,7 +322,7 @@ class CacheService:
 
             # results è [card0, added0, exp0, card1, added1, exp1, ...]
             to_trim: list[str] = []
-            for idx, k in enumerate(keys):
+            for idx, k in enumerate(warm_keys):
                 card_before = results[idx * 3]
                 added = results[idx * 3 + 1]  # 1 se nuovo member, 0 se update
                 if card_before + added > max_size:
@@ -400,6 +408,15 @@ class CacheService:
             return
         with self._timing.cache.measure():
             self._client.delete(*keys)
+
+    def scan_delete(self, pattern: str) -> None:
+        """SCAN + DEL per tutte le chiavi che corrispondono al pattern glob."""
+        if not self._enabled:
+            return
+        with self._timing.cache.measure():
+            keys = list(self._client.scan_iter(pattern))
+            if keys:
+                self._client.delete(*keys)
 
 
 
